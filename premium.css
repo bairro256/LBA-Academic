@@ -4,3 +4,14 @@
 :root[data-theme="light"] .premium-auth{background:#fff;color:#252a33;border-color:#d8dde5}
 :root[data-theme="light"] .premium-auth label{color:#394250}
 :root[data-theme="light"] .premium-auth input{background:#fff;color:#20232a;border-color:#d4d9e1}
+
+:root[data-theme="light"] .premium-price{color:#20232a}
+:root[data-theme="light"] .premium-price small{color:#687080}
+:root[data-theme="light"] .premium-content .panel{background:#fff;color:#303641;border-color:#d8dde5}
+:root[data-theme="light"] .premium-content .panel h2,:root[data-theme="light"] .premium-content .panel h3{color:#20232a}
+:root[data-theme="light"] .premium-content .panel p,:root[data-theme="light"] .premium-userbar small{color:#5f6876}
+:root[data-theme="light"] .premium-note{background:#fff8e7;color:#5e4c1b;border-color:#e7d7aa}
+:root[data-theme="light"] .auth-tabs button{background:#eef0f3;color:#424b59;border-color:#d8dde5}
+:root[data-theme="light"] .auth-tabs button.active{background:#fff;color:#20232a;border-color:#e50914}
+:root[data-theme="light"] #authFeedback,:root[data-theme="light"] #activationFeedback{color:#4d5867}
+:root[data-theme="light"] .premium-footer{color:#687080}
