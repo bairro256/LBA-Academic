@@ -6,7 +6,7 @@ const DB_URL='https://ksejqypwlmwwayxtievk.supabase.co';
 const DB_KEY='sb_publishable_TPeGeLoBdlva7yQqldtbAg_YYi0uHnd';
 const db=createClient(DB_URL,DB_KEY);
 const $=id=>document.getElementById(id);
-let user=null, engine=null, activeTab='dashboard', initialized=false;
+let user=null, engine=null, activeTab='dashboard', initialized=false, trainingBoardCleanup=null;
 const skills=['aberturas','tatica','estrategia','finais','psicologia'];
 const skillNames={aberturas:'Aberturas',tatica:'Táctica',estrategia:'Estratégia',finais:'Finais',psicologia:'Psicologia de jogo'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -89,6 +89,7 @@ function analyseFen(fen,multiPv=3,depth=12){
  });
 }
 async function middlegame(){
+ if(trainingBoardCleanup){trainingBoardCleanup();trainingBoardCleanup=null;}
  panel(`<div class="lba-module-intro"><span class="mini-label">MÓDULO 02 · CÁLCULO E ESTRATÉGIA</span><h3>Laboratório de Meio-Jogo</h3><p>Estuda a posição num tabuleiro interactivo, calcula variantes legais e consulta três candidatos do Stockfish.</p></div>
  <div class="lba-board-layout">
   <article class="lba-suite-card lba-board-card">
@@ -141,7 +142,8 @@ async function middlegame(){
  $('engineAnalyse').onclick=async()=>{const out=$('engineFeedback');out.textContent='A iniciar Stockfish…';$('engineAnalyse').disabled=true;try{const fen=game.fen();const lines=await analyseFen(fen,3,12);out.innerHTML=lines.map(l=>'<div class="lba-engine-line"><b>#'+l.multipv+' · '+(l.scoreType==='mate'?'Mate em '+l.score:(l.score/100).toFixed(2))+'</b><p>'+esc(l.pv)+'</p></div>').join('')||'A engine não devolveu variantes.';await record('meio-jogo','estrategia','analysis',null,0,{fen,lines});}catch(err){out.textContent='Não foi possível analisar: '+err.message;}finally{$('engineAnalyse').disabled=false;}};
  const resize=()=>{if(ground)ground.redrawAll();};
  window.addEventListener('resize',resize,{passive:true});
- if(window.ResizeObserver){const ro=new ResizeObserver(resize);ro.observe($('lbaBoardFrame')||boardEl.parentElement);boardEl._lbaResizeObserver=ro;}
+ let ro=null;if(window.ResizeObserver){ro=new ResizeObserver(resize);ro.observe(boardEl.parentElement);}
+ trainingBoardCleanup=()=>{window.removeEventListener('resize',resize);if(ro)ro.disconnect();if(ground){ground.destroy();ground=null;}};
 }
 async function endgames(){
  panel(`<div class="lba-module-intro"><span class="mini-label">MÓDULO 03 · TÉCNICA DE FINAIS</span><h3>Centro de Finais</h3><p>Consulta Syzygy para posições cobertas e identifica se o resultado teórico é vitória, empate ou derrota para o jogador que tem a vez.</p></div>
@@ -166,7 +168,7 @@ async function analysis(){
  await loadHistory();
 }
 async function loadHistory(){const box=$('analysisHistory');if(!box)return;const {data,error}=await db.from('lba_game_analyses').select('id,depth,created_at,result').order('created_at',{ascending:false}).limit(8);if(error){box.textContent=error.message;return;}box.innerHTML=(data||[]).map(x=>'<div class="lba-list-row"><span><b>'+new Date(x.created_at).toLocaleString('pt-AO')+'</b><small>'+esc(x.result?.plies||0)+' meios-lances · profundidade '+esc(x.depth||'—')+'</small></span><span class="lba-tag">GUARDADA</span></div>').join('')||'<p class="lba-footnote">Ainda não guardaste análises.</p>';}
-async function showTab(tab){activeTab=tab;$('premiumSuite').querySelectorAll('[data-suite]').forEach(b=>b.classList.toggle('active',b.dataset.suite===tab));if(tab==='dashboard')return dashboard();if(tab==='openings')return openings();if(tab==='middlegame')return middlegame();if(tab==='endgames')return endgames();if(tab==='analysis')return analysis();}
+async function showTab(tab){if(tab!=='middlegame'&&trainingBoardCleanup){trainingBoardCleanup();trainingBoardCleanup=null;}activeTab=tab;$('premiumSuite').querySelectorAll('[data-suite]').forEach(b=>b.classList.toggle('active',b.dataset.suite===tab));if(tab==='dashboard')return dashboard();if(tab==='openings')return openings();if(tab==='middlegame')return middlegame();if(tab==='endgames')return endgames();if(tab==='analysis')return analysis();}
 export async function initPremiumExperience(){
  if(initialized)return;initialized=true;
  const {data:{session}}=await db.auth.getSession();if(!session){initialized=false;return;}user=session.user;
