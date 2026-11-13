@@ -2,19 +2,14 @@
 
 Plataforma de treino e aprendizagem de xadrez da LBA.
 
-## Endereços oficiais
+## Site oficial
 
-- **Site público:** https://headless-dljbtqrlndj-zmpgsy7snn-140a.wix-site-host.com/
-- **Área Premium:** https://headless-dljbtqrlndj-zmpgsy7snn-140a.wix-site-host.com/premium.html
-- **Painel Wix:** https://manage.wix.com/dashboard/3a274143-5bfd-4333-afb8-f8b98e378bca
-- **Repositório público:** https://github.com/bairro256/LBA-Academic
+- Página inicial e apresentação pública: `index.html`
+- Estilos da identidade institucional: `official-site.css`
+- Área Premium: `premium.html`
+- Repositório público: https://github.com/bairro256/LBA-Academic
 
-## Estado das versões
-
-- `main` representa a versão de referência do site publicado.
-- `premium-v2-implementation` contém a nova experiência Premium e as melhorias de interface e segurança.
-- O Pull Request [#1](https://github.com/bairro256/LBA-Academic/pull/1) mantém a integração em revisão; não confundir a branch de desenvolvimento com a versão já publicada no Wix.
-- A publicação da nova suite no Wix depende da validação final em Safari/iPhone e da revisão de licenças de terceiros.
+A homepage apresenta a LBA Academia de Xadrez, os planos de aulas, contactos e acesso às ferramentas digitais. A publicação independente num domínio público ainda depende da ligação do repositório a um serviço de alojamento. O endereço Wix antigo não representa esta versão actualizada.
 
 ## Funcionalidades da versão de referência
 
