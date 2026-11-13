@@ -81,7 +81,7 @@ export function renderLivroVivo({ root, record = async () => {} }) {
       turnColor: game.turn() === 'w' ? 'white' : 'black',
       check: game.isCheck() ? (game.turn() === 'w' ? 'white' : 'black') : false,
       lastMove: history.length ? [history[history.length - 1].from, history[history.length - 1].to] : undefined,
-      movable: { free: false, color: 'both', dests: legalDests(), showDests: true }
+      movable: { free: false, color: challengeMode ? 'white' : 'both', dests: legalDests(), showDests: true }
     });
   };
   const loadPly = ply => {
@@ -100,12 +100,17 @@ export function renderLivroVivo({ root, record = async () => {} }) {
       if (!move) { renderBoard(); return; }
       renderBoard();
       if (challengeMode && !challengeSolved) {
+        if (move.color !== 'w') { game = new Chess(CHALLENGE_FEN); renderBoard(); return; }
         if (move.san === 'Bb5' || move.san === 'Bc4') {
           challengeSolved = true;
+          record('meio-jogo', 'estrategia', 'attempt', null, 0, { kind: 'live-book-challenge', move: move.san, correct: true }).catch(() => {});
           challengeStatus.textContent = 'Muito bem! ' + move.san + ' é um desenvolvimento activo: o bispo entra no jogo e as Brancas disputam casas importantes. Podes continuar a explorar a posição.';
           record('meio-jogo', 'estrategia', 'completed', null, 0, { kind: 'live-book-challenge', move: move.san }).catch(() => {});
         } else {
-          challengeStatus.textContent = move.san + ' é legal, mas não é uma das duas respostas pedidas. Repara nas casas b5 e c4 e tenta novamente com o desafio reiniciado.';
+          record('meio-jogo', 'estrategia', 'attempt', null, 0, { kind: 'live-book-challenge', move: move.san, correct: false }).catch(() => {});
+          challengeStatus.textContent = move.san + ' é legal, mas não cumpre o objectivo deste exercício. O tabuleiro foi reposto; tenta 3.Bb5 ou 3.Bc4.';
+          game = new Chess(CHALLENGE_FEN);
+          renderBoard();
         }
       } else {
         boardStatus.textContent = 'Lance ' + move.san + ' jogado. ' + (freeMode ? 'Estás em exploração livre.' : 'Carrega em “Voltar ao texto” para regressar à posição seleccionada no capítulo.');
