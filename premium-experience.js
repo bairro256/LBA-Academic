@@ -2,12 +2,13 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Chess } from 'https://esm.sh/chess.js@1.4.0';
 import { Chessground } from 'https://esm.sh/chessground@9.2.1';
 import { MotorDeAnalisePremium } from './premium-engine/AnalisePartidaMotor.js';
+import { renderLivroVivo } from './premium-engine/livro-vivo.js';
 
 const DB_URL='https://ksejqypwlmwwayxtievk.supabase.co';
 const DB_KEY='sb_publishable_TPeGeLoBdlva7yQqldtbAg_YYi0uHnd';
 const db=createClient(DB_URL,DB_KEY);
 const $=id=>document.getElementById(id);
-let user=null, engine=null, activeTab='dashboard', initialized=false, trainingBoardCleanup=null, openingBoardCleanup=null, endgameBoardCleanup=null, analysisBoardCleanup=null;
+let user=null, engine=null, activeTab='dashboard', initialized=false, trainingBoardCleanup=null, openingBoardCleanup=null, endgameBoardCleanup=null, analysisBoardCleanup=null, liveBookCleanup=null;
 const skills=['aberturas','tatica','estrategia','finais','psicologia'];
 const skillNames={aberturas:'Aberturas',tatica:'Táctica',estrategia:'Estratégia',finais:'Finais',psicologia:'Psicologia de jogo'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -17,7 +18,7 @@ function shell(){
  root.innerHTML=`
  <div class="lba-suite-head"><div><span class="mini-label">LBA PERFORMANCE SYSTEM</span><h2>Centro de treino <em>inteligente</em></h2><p>Um percurso integrado para desenvolver pensamento, técnica e consistência competitiva.</p></div><div class="lba-suite-status"><span class="lba-live-dot"></span> TREINO PREMIUM</div></div>
  <nav class="lba-suite-nav" aria-label="Centro de treino">
- <button data-suite="dashboard" class="active">Visão geral</button><button data-suite="openings">Aberturas</button><button data-suite="middlegame">Meio-jogo</button><button data-suite="endgames">Finais</button><button data-suite="analysis">Análise</button></nav>
+ <button data-suite="dashboard" class="active">Visão geral</button><button data-suite="openings">Aberturas</button><button data-suite="middlegame">Meio-jogo</button><button data-suite="endgames">Finais</button><button data-suite="analysis">Análise</button><button data-suite="livebook">Livro Vivo</button></nav>
  <div id="lbaSuitePanel" class="lba-suite-panel" aria-live="polite"></div><div id="suiteStatus" class="lba-feedback" role="status" aria-live="polite"></div>`;
  root.querySelectorAll('[data-suite]').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.suite)));
 }
@@ -375,7 +376,7 @@ async function analysis(){
  await loadHistory();
 }
 async function loadHistory(){const box=$('analysisHistory');if(!box)return;const {data,error}=await db.from('lba_game_analyses').select('id,depth,created_at,result').order('created_at',{ascending:false}).limit(8);if(error){box.textContent=error.message;return;}box.innerHTML=(data||[]).map(x=>'<div class="lba-list-row"><span><b>'+new Date(x.created_at).toLocaleString('pt-AO')+'</b><small>'+esc(x.result?.plies||0)+' meios-lances · profundidade '+esc(x.depth||'—')+'</small></span><span class="lba-tag">GUARDADA</span></div>').join('')||'<p class="lba-footnote">Ainda não guardaste análises.</p>';}
-async function showTab(tab){if(tab!=='middlegame'&&trainingBoardCleanup){trainingBoardCleanup();trainingBoardCleanup=null;}if(tab!=='openings'&&openingBoardCleanup){openingBoardCleanup();openingBoardCleanup=null;}if(tab!=='endgames'&&endgameBoardCleanup){endgameBoardCleanup();endgameBoardCleanup=null;}if(tab!=='analysis'&&analysisBoardCleanup){analysisBoardCleanup();analysisBoardCleanup=null;}activeTab=tab;$('premiumSuite').querySelectorAll('[data-suite]').forEach(b=>b.classList.toggle('active',b.dataset.suite===tab));if(tab==='dashboard')return dashboard();if(tab==='openings')return openings();if(tab==='middlegame')return middlegame();if(tab==='endgames')return endgames();if(tab==='analysis')return analysis();}
+async function showTab(tab){if(tab!=='livebook'&&liveBookCleanup){liveBookCleanup();liveBookCleanup=null;}if(tab!=='middlegame'&&trainingBoardCleanup){trainingBoardCleanup();trainingBoardCleanup=null;}if(tab!=='openings'&&openingBoardCleanup){openingBoardCleanup();openingBoardCleanup=null;}if(tab!=='endgames'&&endgameBoardCleanup){endgameBoardCleanup();endgameBoardCleanup=null;}if(tab!=='analysis'&&analysisBoardCleanup){analysisBoardCleanup();analysisBoardCleanup=null;}activeTab=tab;$('premiumSuite').querySelectorAll('[data-suite]').forEach(b=>b.classList.toggle('active',b.dataset.suite===tab));if(tab==='dashboard')return dashboard();if(tab==='openings')return openings();if(tab==='middlegame')return middlegame();if(tab==='endgames')return endgames();if(tab==='analysis')return analysis();if(tab==='livebook'){liveBookCleanup=renderLivroVivo({root:$('lbaSuitePanel'),record});return;}}
 export async function initPremiumExperience(){
  if(initialized)return;initialized=true;
  const {data:{session}}=await db.auth.getSession();if(!session){initialized=false;return;}user=session.user;
