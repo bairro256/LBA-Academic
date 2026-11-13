@@ -24,7 +24,11 @@ export function validateCalculationLine(startFen: string, moves: CandidateMove[]
   return { ...attempt, valid: accepted, failedAt: accepted ? undefined : moves.length };
 }
 
-function samePosition(a: string, b: string): boolean {\n  return a.split(" ").slice(0, 4).join(" ") === b.split(" ").slice(0, 4).join(" ");\n}\n\nexport type PawnStructure = "carlsbad" | "isolated-queen-pawn" | "hanging-pawns" | "pawn-chain" | "minority-attack" | "open-center" | "other";
+function samePosition(a: string, b: string): boolean {
+  return a.split(" ").slice(0, 4).join(" ") === b.split(" ").slice(0, 4).join(" ");
+}
+
+export type PawnStructure = "carlsbad" | "isolated-queen-pawn" | "hanging-pawns" | "pawn-chain" | "minority-attack" | "open-center" | "other";
 export interface TaggedPuzzle { id: string; fen: string; themes: string[]; structures: PawnStructure[] }
 export function filterPuzzles(puzzles: TaggedPuzzle[], structure?: PawnStructure, theme?: string): TaggedPuzzle[] {
   return puzzles.filter(p => (!structure || p.structures.includes(structure)) && (!theme || p.themes.includes(theme)));
