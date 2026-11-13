@@ -180,7 +180,7 @@ function renderClassroom(){
  if(state.tab==='practice')initPuzzle(t.name);
  if(state.tab==='games')initReplay();
  if(state.tab==='test'){$('classroomPanel').querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{const good=b.dataset.answer==='good';$('quizFeedback').hidden=false;$('quizFeedback').className='board-feedback '+(good?'success':'error');$('quizFeedback').textContent=good?'Correcto. Primeiro compreende a posição; depois escolhe o plano.':'Ainda não. Começa por avaliar a posição antes de procurar um lance espectacular.';});}
- $('markTopicDone')?.addEventListener('click',()=>{state.completed.add(t.id+'-'+state.level);renderClassroom()});
+ $('markTopicDone')?.addEventListener('click',()=>{state.completed.add(t.id+'-'+state.level);window.dispatchEvent(new CustomEvent('lba:lesson-completed',{detail:{lessonId:t.id+'-'+state.level,topic:t.name,level:state.level}}));renderClassroom()});
 }
 function boardDraw(root,game,selected,onSquare){
  root.innerHTML='';const glyph={w:{k:'♔',q:'♕',r:'♖',b:'♗',n:'♘',p:'♙'},b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}};const board=game.board();
