@@ -31,7 +31,7 @@ const levels = [
  {id:'intermediate',label:'1500–1800',name:'Intermédio',color:'gold'},
  {id:'advanced',label:'1800–2000',name:'Avançado',color:'red'}
 ];
-const published = new Set(['Centro','Estruturas de Peões','Peças Boas e Más','Finais de Torres']);
+const published = new Set(['Estruturas de Peões','Peças Boas e Más','Finais de Torres']);
 const state = {topic:null,level:'base',tab:'theory',completed:new Set()};
 try{JSON.parse(localStorage.getItem('lba-classroom-progress')||'[]').forEach(x=>state.completed.add(x));}catch(e){}
 const $ = id => document.getElementById(id);
