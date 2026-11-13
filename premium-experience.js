@@ -59,7 +59,7 @@ async function dashboard(){
 function curriculumCards(items,kind){
  return items.map((x,i)=>'<details class="lba-suite-card lba-curriculum-lesson" '+(i===0?'open':'')+'><summary><span class="mini-label">'+(kind==='opening'?x.lado+' · '+x.eco:kind==='middle'?x.estrutura:x.tema)+'</span><h3>'+esc(x.nome||x.titulo)+'</h3></summary>'+
  (kind==='opening'?'<p><b>Ideia central:</b> '+esc(x.ideia)+'</p><p><b>Linha-modelo completa:</b> <code>'+esc(x.linha)+'</code></p><h4>Como jogar</h4><ul>'+x.planos.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><h4>Respostas às ideias do adversário</h4><ul>'+x.respostas.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><h4>Erros a evitar</h4><ul>'+x.erros.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p><b>Ligação ao meio-jogo:</b> '+esc(x.meio)+'</p><p><b>Ligação ao final:</b> '+esc(x.final)+'</p>'
- :'<p><b>Aula:</b> '+esc(x.aula)+'</p><h4>Planos de jogo</h4><ul>'+x.planos.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p><b>Exercício:</b> '+esc(x.exercício)+'</p><p><b>Erro a evitar:</b> '+esc(x.alerta||x.erro)+'</p>')+'</details>').join('');
+ :(kind==='middle'?'<p><b>Aula:</b> '+esc(x.aula)+'</p><h4>Planos de jogo</h4><ul>'+x.planos.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p><b>Exercício:</b> '+esc(x.exercício)+'</p><p><b>Erro a evitar:</b> '+esc(x.alerta)+'</p>':'<p><b>Aula:</b> '+esc(x.aula)+'</p><h4>Técnica</h4><ul>'+x.técnica.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p><b>Exercício:</b> '+esc(x.exercício)+'</p><p><b>Erro a evitar:</b> '+esc(x.erro)+'</p>'))+'</details>').join('');
 }
 async function openings(){
  if(openingBoardCleanup){openingBoardCleanup();openingBoardCleanup=null;}
