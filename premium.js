@@ -1,11 +1,16 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-let setFullCurriculumAccess = () => {};
+let pendingFullCurriculumAccess = false;
+let curriculumModuleReady = false;
+let setFullCurriculumAccess = value => { pendingFullCurriculumAccess = !!value; };
 let initPremiumExperience = () => {};
 import('./premium-experience.js?v=20261113-8').then(module => { initPremiumExperience = module.initPremiumExperience; if (!$('premiumContent')?.hidden) initPremiumExperience(); }).catch(error => console.error('Falha ao carregar o sistema avançado LBA:', error));
-// O currículo e o motor de xadrez são carregados à parte: uma falha externa não bloqueia o login.
+// O estado de acesso é guardado até o currículo terminar de carregar, evitando a corrida entre autenticação e importação.
 import('./curriculum.js').then(module => {
-  setFullCurriculumAccess = module.setFullCurriculumAccess;
+  const applyFullAccess = module.setFullCurriculumAccess;
+  setFullCurriculumAccess = value => { pendingFullCurriculumAccess = !!value; if (curriculumModuleReady) applyFullAccess(pendingFullCurriculumAccess); };
   module.initCurriculum();
+  curriculumModuleReady = true;
+  applyFullAccess(pendingFullCurriculumAccess);
 }).catch(error => console.error('Falha ao carregar o currículo LBA:', error));
 const supabase=createClient('https://ksejqypwlmwwayxtievk.supabase.co','sb_publishable_TPeGeLoBdlva7yQqldtbAg_YYi0uHnd');
 const $=id=>document.getElementById(id);let mode='login';const appReturn=window.location.origin+'/premium.html';
