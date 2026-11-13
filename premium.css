@@ -164,3 +164,12 @@
 .classroom-lesson .lesson-drill .quiz-option.correct-answer{border-color:#4eaa79;background:rgba(55,155,103,.12);color:#a9e5c2}
 .classroom-lesson .lesson-drill .board-feedback{margin-top:.7rem;line-height:1.65}
 @media(max-width:640px){.classroom-lesson .lesson-lead,.classroom-lesson .lesson-chapter p{font-size:.93rem;line-height:1.85}.classroom-lesson .lesson-chapter{padding:1rem 0}.classroom-lesson .lesson-drills,.classroom-lesson .lesson-concept,.classroom-lesson .lesson-mistakes,.classroom-lesson .lesson-recipe{padding:.9rem}}
+
+
+/* Banco de exercícios do Meio-Jogo LBA */
+.exercise-pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 8px;padding:16px;border:1px solid var(--line,rgba(255,255,255,.14));border-radius:14px}
+.exercise-pagination span{font-size:.88rem;opacity:.8}
+.exercise-pagination button:disabled{opacity:.4;cursor:not-allowed}
+.lesson-drill{scroll-margin-top:90px}
+.lesson-drill .quiz-option{white-space:normal;text-align:left;line-height:1.45}
+@media(max-width:600px){.exercise-pagination{align-items:stretch}.exercise-pagination span{width:100%}.exercise-pagination button{flex:1;min-width:0}}
