@@ -215,10 +215,21 @@ async function analysis(){
     if(!played)throw new Error('PGN inválido no meio-lance '+(i+1)+'.');
     positions.push({fen:replay.fen(),ply:i+1,move:played.san});
    }
-   const scoreWhite=position=>{
-    const top=position.lines?.[0];if(!top)return null;
-    const raw=top.scoreType==='mate'?(Math.sign(top.score||1)*10000):top.score;
-    return (position.fen.split(' ')[1]||'w')==='w'?raw:-raw;
+   const scoreAsWhite=(fen,line)=>{
+    if(!line)return null;
+    const sign=(fen.split(' ')[1]||'w')==='w'?1:-1;
+    if(line.scoreType==='mate')return sign*Math.sign(line.score||1)*(100000-Math.min(1000,Math.abs(line.score))*100);
+    return sign*line.score;
+   };
+   const scoreWhite=position=>scoreAsWhite(position.fen,position.lines?.[0]);
+   const formatWhiteScore=(fen,line)=>{
+    if(!line)return '—';
+    if(line.scoreType==='mate'){
+     const mateForWhite=(fen.split(' ')[1]||'w')==='w'?line.score:-line.score;
+     return (mateForWhite>0?'+':'−')+'M'+Math.abs(line.score);
+    }
+    const cp=scoreAsWhite(fen,line);
+    return (cp>0?'+':'')+(cp/100).toFixed(2);
    };
    const positionAnalyses=[];
    for(let i=0;i<positions.length;i++){
@@ -299,7 +310,7 @@ async function analysis(){
     coach.textContent=cat+' · '+a.explicacao;
     linesBox.innerHTML='<div class="lba-list-row"><span><b>Antes do lance</b><small>'+(before.evalWhiteCp===null?'Sem avaliação':(before.evalWhiteCp/100).toFixed(2)+' na perspectiva das Brancas')+'</small></span><span class="lba-tag">STOCKFISH</span></div>'+
       '<div class="lba-list-row"><span><b>Depois do lance</b><small>'+(after.evalWhiteCp===null?'Sem avaliação':(after.evalWhiteCp/100).toFixed(2)+' na perspectiva das Brancas')+'</small></span><span class="lba-tag">STOCKFISH</span></div>'+
-      before.lines.map(l=>'<div class="lba-list-row"><span><b>Linha candidata '+l.multipv+'</b><small>'+esc(pvSan(before.fen,l.pv))+'</small></span><span class="lba-tag">'+(l.scoreType==='mate'?'M'+l.score:(l.score/100).toFixed(2))+'</span></div>').join('');
+      before.lines.map(l=>'<div class="lba-list-row"><span><b>Linha candidata '+l.multipv+'</b><small>'+esc(pvSan(before.fen,l.pv))+'</small></span><span class="lba-tag">'+formatWhiteScore(before.fen,l)+'</span></div>').join('');
     $('analysisPrev').disabled=index===0;$('analysisNext').disabled=index===assessments.length-1;
     $('analysisRetry').disabled=!(a.categoria==='MISTAKE'||a.categoria==='BLUNDER');
    };
