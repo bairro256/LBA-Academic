@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { initCurriculum } from './curriculum.js';
 const supabase=createClient('https://ksejqypwlmwwayxtievk.supabase.co','sb_publishable_TPeGeLoBdlva7yQqldtbAg_YYi0uHnd');
 const $=id=>document.getElementById(id);
 let mode='login';
@@ -13,4 +14,4 @@ $('authForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$
 $('activationForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$('activateBtn');btn.disabled=true;$('activationFeedback').textContent='A validar o código…';try{const {data:{user}}=await supabase.auth.getUser();const name=user?.user_metadata?.full_name||user?.email?.split('@')[0]||'Aluno';const result=await invoke('redeem',{name,code:$('activationCodeOnly').value.trim()});if(!result.ok)throw new Error(result.reason==='locked'?'Demasiadas tentativas. Aguarda 15 minutos.':'Código inválido ou já utilizado. Contacta o administrador.');showActive({student_name:name,expires_at:result.expires_at});}catch(err){$('activationFeedback').textContent=err.message||'Não foi possível activar. Tenta novamente.';}finally{btn.disabled=false;}});
 $('logoutBtn').addEventListener('click',async()=>{await supabase.auth.signOut();$('authPanel').hidden=false;$('activationPanel').hidden=true;$('premiumContent').hidden=true;setMode('login');});
 supabase.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN'||event==='TOKEN_REFRESHED')setTimeout(refresh,0);});
-(async()=>{const params=new URLSearchParams(window.location.search);if(params.get('confirmed')==='1'){$('confirmedNotice').hidden=false;history.replaceState({},'',window.location.pathname);}await refresh();})();
+(async()=>{initCurriculum();const params=new URLSearchParams(window.location.search);if(params.get('confirmed')==='1'){$('confirmedNotice').hidden=false;history.replaceState({},'',window.location.pathname);}await refresh();})();
