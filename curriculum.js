@@ -188,5 +188,6 @@ function initGames(){
 }
 export function initCurriculum(){
  renderModules();
+ initDemo();
  $('backToModules')?.addEventListener('click',()=>{$('classroomView').hidden=true;$('curriculumModules').hidden=false;$('curriculumModules').scrollIntoView({behavior:'smooth',block:'start'})});
 }
