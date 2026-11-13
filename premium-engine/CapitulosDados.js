@@ -33,7 +33,7 @@ export const BANCO_LIVROS_PREMIUM = [
     ],
     historicoFens: [
       'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-      'rnbqkbnr/ppp1pppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
+      'rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
       'rnbqkbnr/ppp2ppp/8/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
       'rnbqkbnr/ppp2ppp/8/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3',
       'rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4'
