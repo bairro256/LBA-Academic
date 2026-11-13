@@ -33,6 +33,7 @@ const levels = [
 ];
 const published = new Set(['Centro','Estruturas de Peões','Peças Boas e Más','Finais de Torres']);
 const state = {topic:null,level:'base',tab:'theory',completed:new Set()};
+try{JSON.parse(localStorage.getItem('lba-classroom-progress')||'[]').forEach(x=>state.completed.add(x));}catch(e){}
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -71,7 +72,7 @@ function renderClassroom(){
  test:`<div class="classroom-lesson"><span class="mini-label">DESAFIO FINAL</span><h3>Verifica o que aprendeste</h3><p>O teste final desta pasta terá 5 a 10 exercícios específicos de ${esc(t.name)}. Ao concluir, o teu progresso será actualizado.</p><div class="empty-content">Exercícios deste nível em preparação.</div><button class="btn btn-outline" id="markTopicDone" type="button" ${done?'disabled':''}>${done?'Pasta concluída ✓':'Marcar aula como estudada'}</button></div>`
  };
  $('classroomPanel').innerHTML=panels[state.tab];
- const doneBtn=$('markTopicDone');if(doneBtn)doneBtn.onclick=()=>{state.completed.add(t.id+'-'+state.level);renderClassroom()};
+ const doneBtn=$('markTopicDone');if(doneBtn)doneBtn.onclick=()=>{state.completed.add(t.id+'-'+state.level);try{localStorage.setItem('lba-classroom-progress',JSON.stringify([...state.completed]));}catch(e){}renderClassroom()};
  if(state.tab==='practice')initPracticeBoard();
 }
 function initPracticeBoard(){
