@@ -59,7 +59,8 @@ export class MotorDeAnalisePremium {
    */
   public carregarPartidaComAnalise(
     historicoLances: string[],
-    avaliacoesEngine: Array<number | null | undefined>
+    avaliacoesEngine: Array<number | null | undefined>,
+    opcoesPorLance: Array<OpcoesClassificacao | undefined> = []
   ): LanceAnalisado[] {
     this.chess = new Chess();
     this.historicoAnalise = [];
@@ -89,7 +90,14 @@ export class MotorDeAnalisePremium {
       const perdaCp = avaliacaoAnteriorValida
         ? Math.max(0, vezDeJogar === "w" ? evalAnterior! - evalDepois! : evalDepois! - evalAnterior!)
         : null;
-      const categoria = perdaCp === null ? null : this.calcularCategoria(perdaCp);
+      const opcoes = opcoesPorLance[i] || {};
+      const lanceUci = jogada.from + jogada.to + (jogada.promotion || "");
+      const categoria = perdaCp === null
+        ? null
+        : this.calcularCategoria(perdaCp, {
+            ...opcoes,
+            melhorLanceUci: opcoes.melhorLanceUci
+          }, lanceUci);
       const explicacao = categoria
         ? this.gerarTextoPedagogico(categoria, jogada.san, perdaCp!)
         : "Avaliação insuficiente para classificar este lance com rigor. Analisa novamente esta posição com a engine.";
@@ -114,7 +122,14 @@ export class MotorDeAnalisePremium {
   }
 
   /** Perda medida na perspectiva do jogador que acabou de mover. */
-  private calcularCategoria(perdaCp: number): CategoriaLance {
+  private calcularCategoria(
+    perdaCp: number,
+    opcoes: OpcoesClassificacao,
+    lanceUci: string
+  ): CategoriaLance {
+    if (opcoes.constaNaTeoria) return "BOOK";
+    if (opcoes.brilhanteConfirmado) return "BRILLIANCY";
+    if (opcoes.melhorLanceUci && opcoes.melhorLanceUci.toLowerCase() === lanceUci.toLowerCase()) return "GREAT_MOVE";
     if (perdaCp >= CP_ERRO_GRAVE) return "BLUNDER";
     if (perdaCp >= CP_ERRO) return "MISTAKE";
     if (perdaCp >= CP_IMPRECISAO) return "INACCURACY";
