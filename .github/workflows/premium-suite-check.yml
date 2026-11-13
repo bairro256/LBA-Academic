@@ -1,7 +1,7 @@
 name: Premium suite checks
 on:
   push:
-    branches: [premium-v2-implementation]
+    branches: [main, premium-v2-implementation]
   pull_request:
     branches: [main]
 jobs:
@@ -14,6 +14,7 @@ jobs:
           node-version: 22
       - name: Check browser modules
         run: |
+          node --input-type=module --check < curriculum.js
           node --input-type=module --check < premium.js
           node --input-type=module --check < premium-experience.js
           node --input-type=module --check < premium-engine/AnalisePartidaMotor.js
