@@ -113,5 +113,13 @@ async function showTab(tab){activeTab=tab;$('premiumSuite').querySelectorAll('[d
 export async function initPremiumExperience(){
  if(initialized)return;initialized=true;
  const {data:{session}}=await db.auth.getSession();if(!session){initialized=false;return;}user=session.user;
+ window.addEventListener('lba:lesson-completed',async event=>{
+  const d=event.detail||{}, lessonId=String(d.lessonId||''); if(!lessonId||!user)return;
+  const {error}=await db.from('lba_lesson_progress').upsert({user_id:user.id,lesson_id:lessonId,state:'completed',completed_at:new Date().toISOString(),updated_at:new Date().toISOString()},{onConflict:'user_id,lesson_id'});
+  if(error)console.warn('LBA lesson progress not saved',error.message);
+  const prefix=lessonId.split('-')[0],module=prefix==='openings'?'aberturas':prefix==='middlegame'?'meio-jogo':'finais';
+  const skill=prefix==='openings'?'aberturas':prefix==='endgames'?'finais':'estrategia';
+  await record(module,skill,'completed',null,0,{lessonId,topic:d.topic,level:d.level});
+ });
  shell();await showTab(activeTab);
 }
