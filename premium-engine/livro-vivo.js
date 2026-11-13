@@ -188,11 +188,6 @@ export function renderLivroVivo({ root, record = async () => {} }) {
       button.classList.add('lba-livebook-move');
       button.setAttribute('role', 'button');
       button.setAttribute('tabindex', '0');
-      const activate = () => loadPly(button.dataset.index);
-      button.addEventListener('click', activate);
-      button.addEventListener('keydown', event => {
-        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); activate(); }
-      });
     });
     positions = [];
     (chapter.historicoFens || []).forEach(fen => {
@@ -213,6 +208,10 @@ export function renderLivroVivo({ root, record = async () => {} }) {
   contentEl.addEventListener('click', event => {
     const move = event.target.closest('[data-index]');
     if (move) loadPly(move.dataset.index);
+  });
+  contentEl.addEventListener('keydown', event => {
+    const move = event.target.closest('[data-index]');
+    if (move && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); loadPly(move.dataset.index); }
   });
   root.querySelector('#liveBookSync').addEventListener('click', () => {
     freeMode = false;
