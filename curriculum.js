@@ -147,7 +147,7 @@ function initDemo(){
  next.onclick=()=>{if(index===0){index=1;load();}else{question.textContent='Resultado da demonstração';feedback.className='board-feedback success';feedback.textContent='Acertaste '+score+'/2. Na Área Premium vais encontrar a mesma metodologia, com níveis, explicações e exercícios completos.';next.textContent='Aceder à Área Premium';next.onclick=()=>$('authPanel')?.scrollIntoView({behavior:'smooth',block:'center'});}};
  load();
 }
-\nfunction renderBoard(root,game,selected,onSquare){
+function renderBoard(root,game,selected,onSquare){
  root.innerHTML='';const glyph={w:{k:'♔',q:'♕',r:'♖',b:'♗',n:'♘',p:'♙'},b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}};
  const board=game.board();
  for(let r=0;r<8;r++)for(let f=0;f<8;f++){const p=board[r][f],sq='abcdefgh'[f]+(8-r),b=document.createElement('button');b.type='button';b.className='classroom-square '+((r+f)%2?'dark':'light')+(selected===sq?' selected':'');b.textContent=p?glyph[p.color][p.type]:'';b.setAttribute('aria-label',sq);b.onclick=()=>onSquare(sq);root.appendChild(b);}
