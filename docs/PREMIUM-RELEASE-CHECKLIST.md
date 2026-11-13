@@ -34,7 +34,7 @@ A lista é uma leitura estática dos imports e chamadas `fetch` encontrados no c
 ### Chessground 9.2.1
 O projecto oficial declara GPL-3.0-or-later e avisa expressamente que a utilização no website implica que o trabalho combinado seja distribuído sob GPL e que o código-fonte seja disponibilizado aos utilizadores. A implementação actual importa Chessground no Livro Vivo, no treino às cegas e noutros módulos.
 
-**Não publicar a suite como código fechado sem resolver esta compatibilidade.** Opções a decidir: licenciar e disponibilizar o código-fonte correspondente sob GPL, obter aconselhamento jurídico sobre a arquitectura/licença, ou substituir Chessground por uma biblioteca de tabuleiro com licença compatível com o modelo proprietário pretendido. Não substituir automaticamente sem aprovação.
+**Decisão registada: manter Chessground e preparar a distribuição em conformidade com GPL.** Não substituir a biblioteca. A publicação da suite deve aguardar a disponibilização do código-fonte correspondente aos utilizadores, os avisos/licenças completos e a revisão jurídica da arquitectura. O repositório de trabalho está privado; a disponibilização pública do código combinado ainda exige aprovação explícita e não foi feita. Ver `docs/THIRD-PARTY-NOTICES.md`.
 
 ### Stockfish 19 Lite Single
 O código carrega `stockfish@19.0.1` através de jsDelivr, executando-o num Web Worker e comunicando por UCI. Stockfish é GPLv3. Antes de distribuir, incluir o aviso e a licença aplicáveis e disponibilizar o código-fonte correspondente exacto (ou instruções inequívocas para o obter e reconstruir a versão distribuída), incluindo a versão Stockfish.js utilizada. A separação por Worker/UCI deve ser avaliada juridicamente; não assumir que elimina obrigações.
@@ -51,4 +51,4 @@ Só considerar a publicação depois de:
 4. política de licenças decidida e avisos/código-fonte preparados;
 5. revisão final do acesso Premium, autenticação, preços e validade.
 
-**Estado actual:** CI do Livro Vivo aprovado; testes Safari/iPhone, CSP real e decisão de licenças ainda pendentes. Nenhuma publicação ou merge é autorizada por este documento.
+**Estado actual:** decisão de manter Chessground registada; avisos de terceiros preparados em `docs/THIRD-PARTY-NOTICES.md`. Continuam pendentes: disponibilização pública do código-fonte combinado, arquivo exacto do Stockfish.js 19.0.1 e seus binários, inventário final das licenças, testes Safari/iPhone e CSP real. Nenhuma publicação, alteração de visibilidade ou merge é autorizada por este documento.
