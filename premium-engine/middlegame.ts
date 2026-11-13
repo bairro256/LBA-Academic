@@ -19,12 +19,12 @@ export function validateCalculationLine(startFen: string, moves: CandidateMove[]
   if (!attempt.valid) return attempt;
   const accepted = acceptedLines.some(line => {
     const result = replay(line);
-    return result.valid && result.finalFen === attempt.finalFen;
+    return result.valid && samePosition(result.finalFen, attempt.finalFen);
   });
   return { ...attempt, valid: accepted, failedAt: accepted ? undefined : moves.length };
 }
 
-export type PawnStructure = "carlsbad" | "isolated-queen-pawn" | "hanging-pawns" | "pawn-chain" | "minority-attack" | "open-center" | "other";
+function samePosition(a: string, b: string): boolean {\n  return a.split(" ").slice(0, 4).join(" ") === b.split(" ").slice(0, 4).join(" ");\n}\n\nexport type PawnStructure = "carlsbad" | "isolated-queen-pawn" | "hanging-pawns" | "pawn-chain" | "minority-attack" | "open-center" | "other";
 export interface TaggedPuzzle { id: string; fen: string; themes: string[]; structures: PawnStructure[] }
 export function filterPuzzles(puzzles: TaggedPuzzle[], structure?: PawnStructure, theme?: string): TaggedPuzzle[] {
   return puzzles.filter(p => (!structure || p.structures.includes(structure)) && (!theme || p.themes.includes(theme)));
