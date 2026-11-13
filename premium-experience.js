@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Chess } from 'https://esm.sh/chess.js@1.4.0';
 import { Chessground } from 'https://esm.sh/chessground@9.2.1';
 import { MotorDeAnalisePremium } from './premium-engine/AnalisePartidaMotor.js';
-import { renderEstudosInteractivos } from './premium-engine/estudos-interactivos.js?v=20261113-1';
+import { renderEstudosInteractivos } from './premium-engine/partidas-completas.js?v=20261113-2';
 
 const DB_URL='https://ksejqypwlmwwayxtievk.supabase.co';
 const DB_KEY='sb_publishable_TPeGeLoBdlva7yQqldtbAg_YYi0uHnd';
