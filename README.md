@@ -4,8 +4,8 @@ Plataforma de treino e aprendizagem de xadrez da LBA.
 
 ## Endereços oficiais
 
-- **Site público:** https://headless-xtoppzgmcbu-zmpgsy7snn-140a.wix-site-host.com/
-- **Área Premium:** https://headless-xtoppzgmcbu-zmpgsy7snn-140a.wix-site-host.com/premium.html
+- **Site público:** https://headless-dljbtqrlndj-zmpgsy7snn-140a.wix-site-host.com/
+- **Área Premium:** https://headless-dljbtqrlndj-zmpgsy7snn-140a.wix-site-host.com/premium.html
 - **Painel Wix:** https://manage.wix.com/dashboard/3a274143-5bfd-4333-afb8-f8b98e378bca
 - **Repositório público:** https://github.com/bairro256/LBA-Academic
 
