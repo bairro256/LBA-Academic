@@ -1,7 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 let setFullCurriculumAccess = () => {};
 let initPremiumExperience = () => {};
-import('./premium-experience.js').then(module => { initPremiumExperience = module.initPremiumExperience; if (!$('premiumContent')?.hidden) initPremiumExperience(); }).catch(error => console.error('Falha ao carregar o sistema avançado LBA:', error));
+import('./premium-experience.js?v=20261113-5').then(module => { initPremiumExperience = module.initPremiumExperience; if (!$('premiumContent')?.hidden) initPremiumExperience(); }).catch(error => console.error('Falha ao carregar o sistema avançado LBA:', error));
 // O currículo e o motor de xadrez são carregados à parte: uma falha externa não bloqueia o login.
 import('./curriculum.js').then(module => {
   setFullCurriculumAccess = module.setFullCurriculumAccess;
