@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Chess } from 'https://esm.sh/chess.js@1.4.0';
 import { Chessground } from 'https://esm.sh/chessground@9.2.1';
+import { MotorDeAnalisePremium } from './premium-engine/AnalisePartidaMotor.js';
 
 const DB_URL='https://ksejqypwlmwwayxtievk.supabase.co';
 const DB_KEY='sb_publishable_TPeGeLoBdlva7yQqldtbAg_YYi0uHnd';
@@ -195,35 +196,171 @@ function evaluationGraph(results){
 }
 async function analysis(){
  if(analysisBoardCleanup){analysisBoardCleanup();analysisBoardCleanup=null;}
- panel(`<div class="lba-module-intro"><span class="mini-label">MÓDULO 04 · REVISÃO COMPETITIVA</span><h3>Análise de Partidas</h3><p>Importa o PGN, revê a partida lance a lance, compara as linhas candidatas do Stockfish e tenta novamente as posições críticas.</p></div>
- <article class="lba-suite-card"><form id="gameForm" class="lba-form"><label>PGN da partida<textarea id="gamePgn" rows="8" required placeholder="[Event &quot;Training game&quot;]&#10;1. e4 e5 2. Nf3 Nc6 3. Bb5 a6"></textarea></label><label>Profundidade de análise<select id="analysisDepth"><option value="10">Rápida · 10</option><option value="12" selected>Equilibrada · 12</option><option value="15">Profunda · 15 (mais lenta)</option></select></label><button class="lba-primary">Analisar e guardar relatório</button></form><div id="gameFeedback" class="lba-feedback">O relatório só será guardado depois de a análise terminar.</div><div id="gameReport"></div></article>
+ panel(`<div class="lba-module-intro"><span class="mini-label">MÓDULO 05 · REVISÃO COMPETITIVA</span><h3>Análise de Partidas</h3><p>Importa o PGN, analisa cada posição com Stockfish, recebe uma classificação pedagógica por lance e resolve novamente as posições críticas.</p></div>
+ <article class="lba-suite-card"><form id="gameForm" class="lba-form"><label>PGN da partida<textarea id="gamePgn" rows="8" required placeholder="[Event &quot;Training game&quot;]&#10;1. e4 e5 2. Nf3 Nc6 3. Bb5 a6"></textarea></label><label>Profundidade de análise<select id="analysisDepth"><option value="10" selected>Rápida · 10</option><option value="12">Equilibrada · 12</option><option value="15">Profunda · 15 (mais lenta)</option></select></label><button class="lba-primary">Analisar e guardar relatório</button></form><div id="gameFeedback" class="lba-feedback">A engine irá avaliar as posições antes e depois de cada lance. Mantém esta página aberta durante o processamento.</div><div id="gameReport"></div></article>
  <article class="lba-suite-card"><span class="mini-label">HISTÓRICO PESSOAL</span><h3>As tuas análises anteriores</h3><div id="analysisHistory" class="lba-list">A carregar…</div></article>`);
- $('gameForm').onsubmit=async e=>{e.preventDefault();const out=$('gameFeedback'),report=$('gameReport'),btn=e.submitter;btn.disabled=true;report.innerHTML='';try{
-  const chess=new Chess();chess.loadPgn($('gamePgn').value);const history=chess.history({verbose:true});if(!history.length)throw new Error('O PGN não contém lances.');
-  const replay=new Chess(),depth=Number($('analysisDepth').value),results=[];out.textContent='A validar e analisar '+history.length+' lances. Mantém esta página aberta…';
-  for(let i=0;i<history.length;i++){const played=replay.move(history[i].san);if(i%2===1||i===history.length-1){const fen=replay.fen(),lines=await analyseFen(fen,3,depth);results.push({ply:i+1,move:played?.san||history[i].san,fen,lines});out.textContent='Análise em curso: posição '+results.length+' / '+Math.ceil(history.length/2);}}
-  const payload={plies:history.length,positions:results,summary:'Análise Stockfish Multi-PV '+depth};const {error}=await db.from('lba_game_analyses').insert({user_id:user.id,pgn:$('gamePgn').value,engine_name:'Stockfish 19 Lite Single',depth,result:payload});if(error)throw error;
-  const pvSan=(fen,pv)=>{try{const g=new Chess(fen),moves=[];for(const u of String(pv||'').split(/\s+/).slice(0,12)){if(!/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(u))break;const m=g.move({from:u.slice(0,2),to:u.slice(2,4),promotion:u[4]||'q'});if(!m)break;moves.push(m.san);}return moves.join(' ');}catch{return String(pv||'');}};
-  const whiteScore=r=>{const l=r.lines?.[0];if(!l)return 0;const n=l.scoreType==='mate'?Math.sign(l.score)*1000:l.score;return (r.fen||'').split(' ')[1]==='w'?n:-n;};
-  const reviewCandidates=results.map((r,i)=>({index:i,delta:i?Math.abs(whiteScore(r)-whiteScore(results[i-1])):0})).filter(x=>x.index>0&&x.delta>=150);
-  report.innerHTML='<h3>Relatório da partida</h3><section class="lba-eval-card"><span class="mini-label">EVOLUÇÃO DA POSIÇÃO</span>'+evaluationGraph(results)+'</section><section class="lba-suite-card"><span class="mini-label">REVISÃO PEDAGÓGICA</span><h3>Posições que merecem atenção</h3><p class="lba-footnote">O sistema destaca mudanças de avaliação entre posições analisadas. São pontos para rever, não uma classificação automática de erro ou culpa.</p><div id="analysisReviewFlags"></div></section><section class="lba-suite-card lba-analysis-replay"><div class="lba-board-top"><div><span class="mini-label">REVISÃO LANCE A LANCE</span><h3 id="analysisPositionTitle">Posição 1</h3></div><span class="lba-tag">REPLAY</span></div><div class="lba-board-frame"><div id="lbaAnalysisBoard" class="cg-wrap brown cburnett" aria-label="Tabuleiro de revisão da partida"></div></div><div class="lba-board-tools"><button type="button" id="analysisPrev" class="lba-secondary">Anterior</button><button type="button" id="analysisNext" class="lba-secondary">Seguinte</button><button type="button" id="analysisRetry" class="lba-primary">Tentar novamente</button></div><div id="analysisCoach" class="lba-board-coach" role="status" aria-live="polite">Percorre as posições e compara as linhas do motor.</div><div id="analysisLines" class="lba-analysis-lines"></div></section>'+results.map(r=>'<div class="lba-engine-line"><b>Após '+esc(r.move)+' · meio-lance '+r.ply+'</b><p>'+r.lines.map(l=>'Linha '+l.multipv+': '+esc(pvSan(r.fen,l.pv))+' ('+(l.scoreType==='mate'?'M'+l.score:(l.score/100).toFixed(2))+')').join('<br>')+'</p></div>').join('');
-  let index=0,retryMode=false,retryGame=null,ground=null,orientation='white';
-  const board=$('lbaAnalysisBoard'),coach=$('analysisCoach'),linesBox=$('analysisLines'),title=$('analysisPositionTitle');
-  const renderPosition=()=>{const item=results[index];retryMode=false;retryGame=null;title.textContent='Posição '+(index+1)+' de '+results.length+' · após '+item.move;ground.set({fen:item.fen,orientation,turnColor:item.fen.split(' ')[1]==='w'?'white':'black',lastMove:undefined,movable:{free:false,color:'both',dests:new Map(),showDests:false}});coach.textContent='Posição da partida. Carrega em “Tentar novamente” para jogar a partir daqui.';linesBox.innerHTML=item.lines.map(l=>'<div class="lba-list-row"><span><b>Linha '+l.multipv+'</b><small>'+esc(pvSan(item.fen,l.pv))+'</small></span><span class="lba-tag">'+(l.scoreType==='mate'?'M'+esc(l.score):(l.score/100).toFixed(2))+'</span></div>').join('');$('analysisPrev').disabled=index===0;$('analysisNext').disabled=index===results.length-1;};
-  const destinations=()=>{const map=new Map();retryGame.moves({verbose:true}).forEach(m=>{if(!map.has(m.from))map.set(m.from,[]);map.get(m.from).push(m.to);});return map;};
-  const onRetryMove=(from,to)=>{try{const move=retryGame.move({from,to,promotion:'q'});if(!move){ground.set({fen:retryGame.fen(),movable:{free:false,color:'both',dests:destinations()}});return;}const best=String(results[index].lines[0]?.pv||'').trim().split(/\s+/)[0],chosen=move.from+move.to+(move.promotion||'');const correct=best&&chosen===best;coach.textContent=correct?'Boa escolha. Jogaste o primeiro lance da linha principal do Stockfish: '+move.san+'.': 'Lance legal: '+move.san+'. Compara com a linha principal antes de tentares outra vez.';ground.set({fen:retryGame.fen(),turnColor:retryGame.turn()==='w'?'white':'black',movable:{free:false,color:'both',dests:destinations(),showDests:true}});record('analise','tatica','attempt',null,0,{kind:'retry',position:index+1,san:move.san,matchedTopLine:!!correct});}catch(err){coach.textContent='Não foi possível jogar esse lance: '+err.message;}};
-  ground=Chessground(board,{fen:results[0].fen,orientation,coordinates:true,animation:{enabled:true,duration:180},movable:{free:false,color:'both',dests:new Map(),showDests:false}});
-  $('analysisPrev').onclick=()=>{if(index>0){index--;renderPosition();}};$('analysisNext').onclick=()=>{if(index<results.length-1){index++;renderPosition();}};
-  $('analysisRetry').onclick=()=>{retryGame=new Chess(results[index].fen);retryMode=true;ground.set({fen:retryGame.fen(),turnColor:retryGame.turn()==='w'?'white':'black',movable:{free:false,color:'both',dests:destinations(),showDests:true},events:{move:onRetryMove}});coach.textContent='Tenta encontrar o melhor lance. O motor compara a tua primeira escolha com a linha principal.';};
-  renderPosition();
-  const flagsBox=$('analysisReviewFlags');
-  flagsBox.innerHTML=reviewCandidates.length?reviewCandidates.map(x=>'<div class="lba-list-row"><span><b>Posição '+(x.index+1)+'</b><small>Variação de '+(x.delta/100).toFixed(2)+' peões na avaliação</small></span><button type="button" class="lba-secondary" data-review-index="'+x.index+'">Rever</button></div>').join(''):'<p class="lba-footnote">Não foram encontradas variações acentuadas entre as posições amostradas.</p>';
-  flagsBox.querySelectorAll('[data-review-index]').forEach(b=>b.addEventListener('click',()=>{index=Number(b.dataset.reviewIndex);renderPosition();}));
-  const resize=()=>{if(ground)ground.redrawAll();};window.addEventListener('resize',resize,{passive:true});let ro=null;if(window.ResizeObserver){ro=new ResizeObserver(resize);ro.observe(board.parentElement);}
-  analysisBoardCleanup=()=>{window.removeEventListener('resize',resize);if(ro)ro.disconnect();if(ground){ground.destroy();ground=null;}};
-  out.textContent='Análise concluída e guardada na tua conta. Revê as posições no tabuleiro.';
-  await record('analise','tatica','analysis',null,0,{positions:results.length,plies:history.length});await loadHistory();
- }catch(err){out.textContent='Não foi possível concluir: '+err.message;}finally{btn.disabled=false;}};
+ $('gameForm').onsubmit=async e=>{
+  e.preventDefault();
+  const out=$('gameFeedback'),report=$('gameReport'),btn=e.submitter;
+  btn.disabled=true;report.innerHTML='';
+  try{
+   const sourcePgn=$('gamePgn').value;
+   const chess=new Chess();chess.loadPgn(sourcePgn);
+   const history=chess.history({verbose:true});
+   if(!history.length)throw new Error('O PGN não contém lances.');
+   if(history.length>160)throw new Error('Esta partida tem mais de 160 meios-lances. Divide o PGN em duas partes para garantir uma análise estável no telemóvel.');
+   const depth=Number($('analysisDepth').value),replay=new Chess(),positions=[{fen:replay.fen(),ply:0,move:'Posição inicial'}];
+   for(let i=0;i<history.length;i++){
+    const played=replay.move(history[i].san);
+    if(!played)throw new Error('PGN inválido no meio-lance '+(i+1)+'.');
+    positions.push({fen:replay.fen(),ply:i+1,move:played.san});
+   }
+   const scoreWhite=position=>{
+    const top=position.lines?.[0];if(!top)return null;
+    const raw=top.scoreType==='mate'?(Math.sign(top.score||1)*10000):top.score;
+    return (position.fen.split(' ')[1]||'w')==='w'?raw:-raw;
+   };
+   const positionAnalyses=[];
+   for(let i=0;i<positions.length;i++){
+    out.textContent='Stockfish a analisar posição '+(i+1)+' de '+positions.length+' · profundidade '+depth+'. Não feches esta página…';
+    const lines=await analyseFen(positions[i].fen,3,depth);
+    if(!lines.length)throw new Error('A engine não devolveu uma avaliação para a posição '+(i+1)+'.');
+    positionAnalyses.push({...positions[i],lines,evalWhiteCp:scoreWhite({...positions[i],lines})});
+   }
+   const moveOptions=history.map((_,i)=>{
+    const pv=String(positionAnalyses[i].lines?.[0]?.pv||'').trim().split(/\s+/)[0]||'';
+    return {melhorLanceUci:/^[a-h][1-8][a-h][1-8][qrbn]?$/i.test(pv)?pv:undefined};
+   });
+   const motor=new MotorDeAnalisePremium();
+   const assessments=motor.carregarPartidaComAnalise(
+    history.map(m=>m.san),
+    positionAnalyses.slice(1).map(p=>p.evalWhiteCp),
+    moveOptions,
+    positionAnalyses[0].evalWhiteCp
+   );
+   const graphResults=positionAnalyses.slice(1).map(p=>({fen:p.fen,lines:p.lines}));
+   const payload={
+    plies:history.length,
+    positions:positionAnalyses.map(p=>({ply:p.ply,move:p.move,fen:p.fen,evalWhiteCp:p.evalWhiteCp,lines:p.lines})),
+    moveAssessments:assessments,
+    engine:'Stockfish 19 Lite Single',
+    summary:'Análise por lance · Multi-PV 3 · profundidade '+depth
+   };
+   const {error:saveError}=await db.from('lba_game_analyses').insert({
+    user_id:user.id,pgn:sourcePgn,engine_name:'Stockfish 19 Lite Single',depth,result:payload
+   });
+   if(saveError)throw saveError;
+
+   const pvSan=(fen,pv)=>{
+    try{
+     const g=new Chess(fen),moves=[];
+     for(const u of String(pv||'').split(/\s+/).slice(0,12)){
+      if(!/^[a-h][1-8][a-h][1-8][qrbn]?$/i.test(u))break;
+      const m=g.move({from:u.slice(0,2),to:u.slice(2,4),promotion:u[4]||'q'});
+      if(!m)break;moves.push(m.san);
+     }
+     return moves.join(' ');
+    }catch{return '';}
+   };
+   const categoryLabels={
+    BRILLIANCY:'Brilhante',GREAT_MOVE:'Melhor lance',BOOK:'Teoria',EXCELLENT:'Excelente',
+    GOOD:'Bom',INACCURACY:'Imprecisão',MISTAKE:'Erro',BLUNDER:'Erro grave'
+   };
+   const categoryClass={
+    BRILLIANCY:'brilliant',GREAT_MOVE:'great',BOOK:'book',EXCELLENT:'excellent',
+    GOOD:'good',INACCURACY:'inaccuracy',MISTAKE:'mistake',BLUNDER:'blunder'
+   };
+   const reviewIndices=assessments.map((a,i)=>({a,i})).filter(x=>x.a.categoria==='MISTAKE'||x.a.categoria==='BLUNDER');
+   report.innerHTML=
+    '<h3>Relatório da partida</h3>'+
+    '<div class="lba-analysis-summary"><span><b>'+history.length+'</b><small>meios-lances</small></span><span><b>'+reviewIndices.length+'</b><small>posições críticas</small></span><span><b>'+depth+'</b><small>profundidade</small></span></div>'+
+    '<section class="lba-eval-card"><span class="mini-label">EVOLUÇÃO DA AVALIAÇÃO · PERSPECTIVA DAS BRANCAS</span>'+evaluationGraph(graphResults)+'</section>'+
+    '<section class="lba-suite-card"><span class="mini-label">REVISÃO PEDAGÓGICA</span><h3>Lances classificados pelo motor</h3><p class="lba-footnote">A classificação baseia-se na variação da avaliação Stockfish entre a posição anterior e posterior, sempre na perspectiva das Brancas. “Brilhante” e “Teoria” só são atribuídos quando confirmados por dados próprios; não são presumidos.</p><div id="analysisMoveList" class="lba-move-list">'+assessments.map((a,i)=>{
+      const label=a.categoria?categoryLabels[a.categoria]:'Sem avaliação';
+      const klass=a.categoria?categoryClass[a.categoria]:'unrated';
+      const evalText=a.perdaCp===null?'—':(a.perdaCp/100).toFixed(2)+' peões';
+      return '<button type="button" class="lba-move-row" data-move-index="'+i+'"><span class="lba-move-number">'+(a.numeroLance)+(a.vezDeJogar==='w'?'.':'…')+'</span><span class="lba-move-san">'+esc(a.san)+'</span><span class="lba-category '+klass+'">'+label+'</span><small>'+evalText+'</small></button>';
+    }).join('')+'</div></section>'+
+    '<section class="lba-suite-card"><span class="mini-label">POSIÇÕES PARA REVER</span><h3>Desafios de recuperação</h3><p class="lba-footnote">O desafio aparece quando a análise encontra uma perda significativa. A solução é validada pela legalidade do lance e comparada com a primeira escolha da linha principal do motor.</p><div id="analysisReviewFlags"></div></section>'+
+    '<section class="lba-suite-card lba-analysis-replay"><div class="lba-board-top"><div><span class="mini-label">TREINO INTERACTIVO</span><h3 id="analysisPositionTitle">Posição antes do lance</h3></div><span class="lba-tag">REPLAY + RETRY</span></div><div class="lba-board-frame"><div id="lbaAnalysisBoard" class="cg-wrap brown cburnett" aria-label="Tabuleiro de revisão e tentativa de novo"></div></div><div class="lba-board-tools"><label class="lba-promotion-choice">Promoção<select id="analysisPromotion"><option value="q">Dama</option><option value="r">Torre</option><option value="b">Bispo</option><option value="n">Cavalo</option></select></label><button type="button" id="analysisPrev" class="lba-secondary">Anterior</button><button type="button" id="analysisNext" class="lba-secondary">Seguinte</button><button type="button" id="analysisRetry" class="lba-primary">Tentar novamente</button></div><div id="analysisCoach" class="lba-board-coach" role="status" aria-live="polite">Selecciona um lance na lista para rever a posição anterior.</div><div id="analysisLines" class="lba-analysis-lines"></div></section>';
+   let index=0,retryGame=null,retryActive=false,ground=null,orientation='white';
+   const board=$('lbaAnalysisBoard'),coach=$('analysisCoach'),linesBox=$('analysisLines'),title=$('analysisPositionTitle');
+   const destinations=()=>{
+    const map=new Map();
+    retryGame.moves({verbose:true}).forEach(m=>{if(!map.has(m.from))map.set(m.from,[]);map.get(m.from).push(m.to);});
+    return map;
+   };
+   const renderPosition=()=>{
+    retryActive=false;retryGame=null;
+    const a=assessments[index],before=positionAnalyses[index],after=positionAnalyses[index+1];
+    title.textContent='Lance '+a.numeroLance+(a.vezDeJogar==='w'?'.':'…')+' '+a.san+' · posição anterior';
+    ground.set({fen:a.fenAntes,orientation,turnColor:a.vezDeJogar==='w'?'white':'black',lastMove:undefined,movable:{free:false,color:'both',dests:new Map(),showDests:false},events:{move:undefined}});
+    const cat=a.categoria?categoryLabels[a.categoria]:'Sem avaliação';
+    coach.textContent=cat+' · '+a.explicacao;
+    linesBox.innerHTML='<div class="lba-list-row"><span><b>Antes do lance</b><small>'+(before.evalWhiteCp===null?'Sem avaliação':(before.evalWhiteCp/100).toFixed(2)+' na perspectiva das Brancas')+'</small></span><span class="lba-tag">STOCKFISH</span></div>'+
+      '<div class="lba-list-row"><span><b>Depois do lance</b><small>'+(after.evalWhiteCp===null?'Sem avaliação':(after.evalWhiteCp/100).toFixed(2)+' na perspectiva das Brancas')+'</small></span><span class="lba-tag">STOCKFISH</span></div>'+
+      before.lines.map(l=>'<div class="lba-list-row"><span><b>Linha candidata '+l.multipv+'</b><small>'+esc(pvSan(before.fen,l.pv))+'</small></span><span class="lba-tag">'+(l.scoreType==='mate'?'M'+l.score:(l.score/100).toFixed(2))+'</span></div>').join('');
+    $('analysisPrev').disabled=index===0;$('analysisNext').disabled=index===assessments.length-1;
+    $('analysisRetry').disabled=!(a.categoria==='MISTAKE'||a.categoria==='BLUNDER');
+   };
+   const onRetryMove=(from,to)=>{
+    if(!retryActive||!retryGame)return;
+    try{
+     const move=retryGame.move({from,to,promotion:$('analysisPromotion')?.value||'q'});
+     if(!move){ground.set({fen:retryGame.fen(),movable:{free:false,color:retryGame.turn()==='w'?'white':'black',dests:destinations(),showDests:true}});return;}
+     const result=motor.testarPalpiteAluno(from+to+(move.promotion||''));
+     if(result.resolvido){
+      retryActive=false;
+      ground.set({fen:retryGame.fen(),movable:{free:false,color:'both',dests:new Map(),showDests:false}});
+      coach.textContent=result.feedback+' A posição foi resolvida.';
+      record('analise','tatica','attempt',100,0,{kind:'premium-retry',position:index+1,san:move.san,resolved:true});
+     }else{
+      const attempts=motor.obterEstadoRecomeco().tentativasFalhadas;
+      retryGame=new Chess(assessments[index].fenAntes);
+      ground.set({fen:retryGame.fen(),turnColor:retryGame.turn()==='w'?'white':'black',movable:{free:false,color:retryGame.turn()==='w'?'white':'black',dests:destinations(),showDests:true},events:{move:onRetryMove}});
+      coach.textContent=result.feedback+' A posição foi reposta para tentares outra vez.';
+      record('analise','tatica','attempt',0,0,{kind:'premium-retry',position:index+1,attempts,resolved:false});
+     }
+    }catch(err){
+     retryGame=new Chess(assessments[index].fenAntes);
+     ground.set({fen:retryGame.fen(),movable:{free:false,color:retryGame.turn()==='w'?'white':'black',dests:destinations(),showDests:true},events:{move:onRetryMove}});
+     coach.textContent='Não foi possível validar esse lance: '+err.message;
+    }
+   };
+   ground=Chessground(board,{fen:assessments[0].fenAntes,orientation,coordinates:true,animation:{enabled:true,duration:180},movable:{free:false,color:'both',dests:new Map(),showDests:false}});
+   $('analysisPrev').onclick=()=>{if(index>0){index--;renderPosition();}};
+   $('analysisNext').onclick=()=>{if(index<assessments.length-1){index++;renderPosition();}};
+   $('analysisRetry').onclick=()=>{
+    const a=assessments[index];
+    if(a.categoria!=='MISTAKE'&&a.categoria!=='BLUNDER')return;
+    const pv=String(positionAnalyses[index].lines?.[0]?.pv||'').trim().split(/\s+/).filter(Boolean);
+    const state=motor.verificarEDispararRecomeco(index,pv);
+    if(!state?.melhorLinhaSolucao?.length){coach.textContent='A engine não forneceu uma linha de solução utilizável. Executa novamente a análise.';return;}
+    retryGame=new Chess(a.fenAntes);retryActive=true;
+    ground.set({fen:retryGame.fen(),turnColor:retryGame.turn()==='w'?'white':'black',movable:{free:false,color:retryGame.turn()==='w'?'white':'black',dests:destinations(),showDests:true},events:{move:onRetryMove}});
+    coach.textContent='Desafio activo. Encontra o primeiro lance da linha principal. A posição será reposta se a tentativa não corresponder à solução.';
+   };
+   const moveList=$('analysisMoveList');
+   moveList.querySelectorAll('[data-move-index]').forEach(b=>b.addEventListener('click',()=>{
+    index=Number(b.dataset.moveIndex);moveList.querySelectorAll('.selected').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');renderPosition();
+   }));
+   const flagsBox=$('analysisReviewFlags');
+   flagsBox.innerHTML=reviewIndices.length?reviewIndices.map(({a,i})=>'<div class="lba-list-row"><span><b>Lance '+a.numeroLance+(a.vezDeJogar==='w'?'.':'…')+' '+esc(a.san)+'</b><small>'+(a.categoria==='BLUNDER'?'Erro grave':'Erro')+' · '+(a.perdaCp/100).toFixed(2)+' peões estimados</small></span><button type="button" class="lba-secondary" data-review-index="'+i+'">Resolver</button></div>').join(''):'<p class="lba-footnote">Não foram identificados erros graves ou erros pelos limites definidos. Podes rever qualquer lance na lista acima.</p>';
+   flagsBox.querySelectorAll('[data-review-index]').forEach(b=>b.addEventListener('click',()=>{
+    index=Number(b.dataset.reviewIndex);moveList.querySelectorAll('.selected').forEach(x=>x.classList.remove('selected'));moveList.querySelector('[data-move-index="'+index+'"]')?.classList.add('selected');renderPosition();
+    $('analysisRetry').click();
+   }));
+   moveList.querySelector('[data-move-index="0"]')?.classList.add('selected');renderPosition();
+   const resize=()=>{if(ground)ground.redrawAll();};
+   window.addEventListener('resize',resize,{passive:true});
+   let ro=null;if(window.ResizeObserver){ro=new ResizeObserver(resize);ro.observe(board.parentElement);}
+   analysisBoardCleanup=()=>{window.removeEventListener('resize',resize);if(ro)ro.disconnect();if(ground){ground.destroy();ground=null;}};
+   out.textContent='Análise concluída. '+history.length+' meios-lances classificados, '+reviewIndices.length+' posições críticas identificadas. Relatório guardado na tua conta.';
+   await record('analise','tatica','analysis',null,0,{positions:positions.length,plies:history.length,critical:reviewIndices.length});
+   await loadHistory();
+  }catch(err){out.textContent='Não foi possível concluir: '+(err?.message||String(err));}
+  finally{btn.disabled=false;}
+ };
  await loadHistory();
 }
 async function loadHistory(){const box=$('analysisHistory');if(!box)return;const {data,error}=await db.from('lba_game_analyses').select('id,depth,created_at,result').order('created_at',{ascending:false}).limit(8);if(error){box.textContent=error.message;return;}box.innerHTML=(data||[]).map(x=>'<div class="lba-list-row"><span><b>'+new Date(x.created_at).toLocaleString('pt-AO')+'</b><small>'+esc(x.result?.plies||0)+' meios-lances · profundidade '+esc(x.depth||'—')+'</small></span><span class="lba-tag">GUARDADA</span></div>').join('')||'<p class="lba-footnote">Ainda não guardaste análises.</p>';}
