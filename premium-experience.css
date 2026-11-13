@@ -133,3 +133,13 @@
 :root[data-theme="light"] .lba-livebook-callout,:root[data-theme="light"] .lba-livebook-challenge{background:#f7f4eb}
 @media(max-width:760px){.lba-livebook-workspace{grid-template-columns:minmax(0,1fr)}.lba-livebook-board-section{position:static;width:100%}.lba-livebook-board-frame{max-width:min(100%,560px)}.lba-livebook-book{max-height:none;overflow:visible}.lba-livebook-controls{grid-template-columns:1fr 1fr}}
 @media(max-width:390px){.lba-livebook-controls{grid-template-columns:1fr}.lba-livebook-book{padding:15px}}
+
+
+/* Livro Vivo: navegação entre capítulos e controlos acessíveis */
+.lba-livebook-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px}
+.lba-livebook-nav button{font-size:11px;padding:9px 10px}
+.lba-livebook-nav span{color:var(--muted);font-size:11px;white-space:nowrap}
+.lba-livebook-nav button:disabled{opacity:.4;cursor:not-allowed}
+.lba-livebook-move{display:inline-block;margin:2px 1px;padding:3px 7px;border:1px solid #d8a92e66;border-radius:5px;background:#d8a92e12;color:var(--gold);font:800 12px Manrope;cursor:pointer}
+.lba-livebook-move:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media(max-width:430px){.lba-livebook-nav{flex-wrap:wrap}.lba-livebook-nav span{order:-1;width:100%;text-align:center}}
