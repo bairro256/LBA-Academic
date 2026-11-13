@@ -6,7 +6,7 @@ const DB_URL='https://ksejqypwlmwwayxtievk.supabase.co';
 const DB_KEY='sb_publishable_TPeGeLoBdlva7yQqldtbAg_YYi0uHnd';
 const db=createClient(DB_URL,DB_KEY);
 const $=id=>document.getElementById(id);
-let user=null, engine=null, activeTab='dashboard', initialized=false, trainingBoardCleanup=null, openingBoardCleanup=null, endgameBoardCleanup=null; analysisBoardCleanup=null;
+let user=null, engine=null, activeTab='dashboard', initialized=false, trainingBoardCleanup=null, openingBoardCleanup=null, endgameBoardCleanup=null, analysisBoardCleanup=null;
 const skills=['aberturas','tatica','estrategia','finais','psicologia'];
 const skillNames={aberturas:'Aberturas',tatica:'Táctica',estrategia:'Estratégia',finais:'Finais',psicologia:'Psicologia de jogo'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
