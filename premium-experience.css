@@ -143,3 +143,27 @@
 .lba-livebook-move{display:inline-block;margin:2px 1px;padding:3px 7px;border:1px solid #d8a92e66;border-radius:5px;background:#d8a92e12;color:var(--gold);font:800 12px Manrope;cursor:pointer}
 .lba-livebook-move:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 @media(max-width:430px){.lba-livebook-nav{flex-wrap:wrap}.lba-livebook-nav span{order:-1;width:100%;text-align:center}}
+
+/* Meio-jogo: aula posicional ligada ao tabuleiro e aos exercícios */
+.lba-middle-layout{display:grid;grid-template-columns:minmax(190px,.32fr) minmax(0,1fr);gap:14px;align-items:start}
+.lba-middle-index{display:grid;gap:7px;position:sticky;top:12px}
+.lba-middle-choice{display:grid;gap:5px;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);text-align:left;cursor:pointer}
+.lba-middle-choice b{font:800 12px Manrope}
+.lba-middle-choice small{font-size:10px;line-height:1.5;color:var(--muted)}
+.lba-middle-choice.is-active{border-color:var(--gold);background:#d8a92e12}
+.lba-middle-work{display:grid;gap:12px;min-width:0}
+.lba-middle-theory h3,.lba-middle-board-heading h3{margin:7px 0 10px;font:800 20px Manrope;color:var(--gold)}
+.lba-middle-theory p{font-size:13px;line-height:1.8}
+.lba-middle-concept,.lba-middle-plans{padding:12px;margin-top:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}
+.lba-middle-concept p{margin:7px 0 0}
+.lba-middle-plans ul{padding-left:20px;margin:8px 0 0}
+.lba-middle-plans li{margin:7px 0;font-size:12px;line-height:1.65}
+.lba-middle-board-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.lba-middle-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}
+.lba-middle-level{padding:10px 7px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font-size:11px;font-weight:800;cursor:pointer}
+.lba-middle-level.is-active{border-color:var(--gold);color:var(--gold);background:#d8a92e12}
+.lba-middle-level:disabled,.lba-middle-choice:disabled{opacity:.45;cursor:not-allowed}
+.lba-middle-challenge>p{font-size:13px;line-height:1.7}
+.lba-middle-board-card .lba-board-frame{max-width:620px;margin-inline:auto}
+@media(max-width:760px){.lba-middle-layout{grid-template-columns:minmax(0,1fr)}.lba-middle-index{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.lba-middle-choice{padding:10px}.lba-middle-levels{grid-template-columns:1fr}}
+@media(max-width:390px){.lba-middle-index{grid-template-columns:1fr}.lba-middle-board-heading{align-items:flex-start;flex-direction:column}}
