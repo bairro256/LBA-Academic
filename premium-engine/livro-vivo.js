@@ -4,6 +4,7 @@ import { BANCO_LIVROS_PREMIUM } from './CapitulosDados.js';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fallbackFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const displaySan = san => String(san || '').replace(/N/g, 'C');
 
 export function renderLivroVivo({ root, record = async () => {} }) {
   if (!root) return () => {};
@@ -116,7 +117,7 @@ export function renderLivroVivo({ root, record = async () => {} }) {
           setExploreButton();
           renderBoard();
           const status = root.querySelector('#liveBookChallengeStatus');
-          if (status) status.textContent = 'Muito bem! ' + move.san + ' cumpre o objectivo posicional. Podes continuar a explorar a posição.';
+          if (status) status.textContent = 'Muito bem! ' + displaySan(move.san) + ' cumpre o objectivo posicional. Podes continuar a explorar a posição.';
           Promise.resolve(record('meio-jogo', 'estrategia', 'completed', null, 0, {
             kind: 'live-book-challenge',
             bookId: chapter.livroId || 'meu_primeiro_livro_premium',
@@ -177,7 +178,7 @@ export function renderLivroVivo({ root, record = async () => {} }) {
           setExploreButton();
           renderBoard();
           boardStatus.textContent = 'Desafio activo: vez de jogar ' + (block.vezDeJogar === 'b' ? 'Pretas' : 'Brancas') + '.';
-          section.querySelector('#liveBookChallengeStatus').textContent = 'Joga ' + block.lancesCorretos.join(' ou ') + ' directamente no tabuleiro.';
+          section.querySelector('#liveBookChallengeStatus').textContent = 'Joga ' + block.lancesCorretos.map(displaySan).join(' ou ') + ' directamente no tabuleiro.';
         });
         section.querySelector('#liveBookHint').addEventListener('click', () => {
           section.querySelector('#liveBookChallengeStatus').textContent = block.dica || 'Observa a casa que precisa de ser controlada e procura um lance que cumpra o tema posicional do capítulo.';
