@@ -50,7 +50,7 @@ export const BANCO_LIVROS_PREMIUM = [
     ],
     historicoFens: [
       '4k3/8/8/3p4/8/8/8/4K3 w - - 0 1',
-      '4k3/8/8/3p4/8/5N2/8/4K3 w - - 0 1'
+      '4k3/8/8/3p4/8/5N2/8/4K3 b - - 0 1'
     ]
   }
 ];
