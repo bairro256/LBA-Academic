@@ -146,3 +146,21 @@
 .game-replay{max-width:760px}.game-replay .classroom-board{width:min(100%,430px)}.game-replay-head{display:flex;justify-content:space-between;gap:12px;font-size:11px;margin:12px 0}.practice-controls{display:flex;gap:9px;flex-wrap:wrap}.practice-controls button:disabled{opacity:.4;cursor:not-allowed}
 :root[data-theme="light"] .full-access-card{background:linear-gradient(135deg,#fff,#f8f5eb)}
 @media(max-width:650px){.full-access-card{grid-template-columns:1fr}.full-access-card .btn{width:100%}.practice-layout{grid-template-columns:1fr}.practice-layout .classroom-board{width:min(100%,360px)}}
+
+
+/* LBA · Meio-Jogo: leitura aprofundada e prática integrada */
+.classroom-lesson .lesson-lead{font-size:1.02rem;line-height:1.9;color:var(--text,#e8e6df);margin:1rem 0 1.5rem;max-width:78ch}
+.classroom-lesson .lesson-chapter{padding:1.15rem 0;border-top:1px solid rgba(212,175,55,.18)}
+.classroom-lesson .lesson-chapter h4{font-size:1rem;color:var(--gold,#d4af37);margin:0 0 .65rem}
+.classroom-lesson .lesson-chapter p{font-size:.95rem;line-height:1.9;color:var(--muted,#b8b5ad);max-width:82ch;margin:0}
+.classroom-lesson .lesson-drills,.classroom-lesson .lesson-concept,.classroom-lesson .lesson-mistakes,.classroom-lesson .lesson-recipe{margin-top:1.25rem;padding:1.15rem;border:1px solid rgba(212,175,55,.16);border-radius:14px;background:rgba(255,255,255,.025)}
+.classroom-lesson .lesson-drills h4{margin:.4rem 0 1rem;color:var(--text,#f2f0e9)}
+.classroom-lesson .lesson-drill{padding:1rem 0;border-top:1px solid rgba(255,255,255,.09)}
+.classroom-lesson .lesson-drill:first-of-type{border-top:0}
+.classroom-lesson .lesson-drill>p{line-height:1.7;color:var(--text,#e8e6df)}
+.classroom-lesson .lesson-drill .quiz-options{display:grid;gap:.55rem;margin:.8rem 0}
+.classroom-lesson .lesson-drill .quiz-option{text-align:left;white-space:normal;line-height:1.5;padding:.8rem 1rem}
+.classroom-lesson .lesson-drill .quiz-option:disabled{opacity:.82;cursor:default}
+.classroom-lesson .lesson-drill .quiz-option.correct-answer{border-color:#4eaa79;background:rgba(55,155,103,.12);color:#a9e5c2}
+.classroom-lesson .lesson-drill .board-feedback{margin-top:.7rem;line-height:1.65}
+@media(max-width:640px){.classroom-lesson .lesson-lead,.classroom-lesson .lesson-chapter p{font-size:.93rem;line-height:1.85}.classroom-lesson .lesson-chapter{padding:1rem 0}.classroom-lesson .lesson-drills,.classroom-lesson .lesson-concept,.classroom-lesson .lesson-mistakes,.classroom-lesson .lesson-recipe{padding:.9rem}}
