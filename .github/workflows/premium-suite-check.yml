@@ -22,4 +22,5 @@ jobs:
       - name: Check TypeScript engine modules
         run: |
           npm install --no-save --no-package-lock typescript@5.9.3 chess.js@1.4.0
+          node premium-engine/validate-livebook.mjs
           npx tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --strict premium-engine/*.ts
