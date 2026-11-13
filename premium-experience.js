@@ -79,11 +79,12 @@ function analyseFen(fen,multiPv=3,depth=12){
   let eng;try{eng=getEngine();}catch(e){reject(e);return;}
   if(eng.busy){reject(new Error('A engine já está a analisar outra posição. Aguarda a conclusão.'));return;}
   const lines=new Map(),timeout=setTimeout(()=>{eng.busy=false;reject(new Error('A engine demorou demasiado. Tenta novamente.'));},45000);
+  const onError=e=>{clearTimeout(timeout);eng.busy=false;engine=null;eng.worker.removeEventListener('message',handler);reject(new Error('Falha ao carregar Stockfish WASM: '+(e.message||'verifica a ligação e tenta novamente.')));};
   const handler=e=>{const line=String(e.data||'');if(line==='uciok'){eng.ready=true;eng.worker.postMessage('isready');return;}if(line==='readyok'){eng.worker.postMessage('setoption name MultiPV value '+multiPv);eng.worker.postMessage('position fen '+fen);eng.worker.postMessage('go depth '+depth);return;}
    if(line.startsWith('info ')&&line.includes(' pv ')){const m=line.match(/multipv (\d+).*?score (cp|mate) (-?\d+).*? pv (.+)$/);if(m)lines.set(Number(m[1]),{multipv:Number(m[1]),scoreType:m[2],score:Number(m[3]),pv:m[4]});}
-   if(line.startsWith('bestmove')){clearTimeout(timeout);eng.worker.removeEventListener('message',handler);eng.busy=false;resolve([...lines.values()].sort((a,b)=>a.multipv-b.multipv));}
+   if(line.startsWith('bestmove')){clearTimeout(timeout);eng.worker.removeEventListener('message',handler);eng.worker.removeEventListener('error',onError);eng.busy=false;resolve([...lines.values()].sort((a,b)=>a.multipv-b.multipv));}
   };
-  eng.busy=true;eng.worker.addEventListener('message',handler);if(eng.ready){eng.worker.postMessage('isready');} 
+  eng.busy=true;eng.worker.addEventListener('message',handler);eng.worker.addEventListener('error',onError,{once:true});if(eng.ready){eng.worker.postMessage('isready');} 
  });
 }
 async function middlegame(){
