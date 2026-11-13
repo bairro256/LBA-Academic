@@ -129,7 +129,25 @@ function renderClassroom(){
  if(state.tab==='games')initGames();
  if(state.tab==='test')initQuiz(t);
 }
-function renderBoard(root,game,selected,onSquare){
+
+function initDemo(){
+ const root=$('demoBoard');if(!root)return;
+ const tasks=[
+  {pgn:'1. e4 e6 2. d4 d5 3. e5',uci:'c7c5',title:'Desafio 1/2 · Ataca a base da cadeia',question:'As Brancas têm peões em d4 e e5. De que forma as Pretas desafiam a base?',hint:'A base está em d4. Usa a alavanca do peão da coluna c.',why:'...c5 ataca a base d4 e é a ruptura temática da Francesa.'},
+  {pgn:'1. d4 d5 2. c4 e6 3. Nf3 Nd7 4. Nc3 Ngf6 5. Bg5 Be7 6. e3 O-O 7. Rc1 c6 8. Qc2 a6 9. a3 h6 10. Bh4 Re8 11. cxd5 exd5',uci:'f1d3',title:'Desafio 2/2 · Coordena antes de atacar',question:'Na estrutura Carlsbad, qual lance desenvolve a última peça menor antes de iniciar o plano de minoria?',hint:'O bispo branco ainda está em f1. Desenvolve-o para uma casa activa.',why:'Bd3 completa o desenvolvimento e prepara a coordenação antes da operação de peões.'}
+ ];
+ let index=0,game=null,selected=null,score=0,solved=false;
+ const feedback=$('demoFeedback'),question=$('demoQuestion'),next=$('demoNext');
+ const load=()=>{game=new Chess();game.loadPgn(tasks[index].pgn);selected=null;solved=false;question.textContent=tasks[index].title+' · '+tasks[index].question;feedback.className='board-feedback';feedback.textContent='Selecciona a peça e joga o lance no tabuleiro.';next.hidden=true;draw();};
+ const draw=()=>renderBoard(root,game,selected,sq=>{
+  if(solved)return;
+  if(selected){const mv=game.move({from:selected,to:sq,promotion:'q'});if(mv){selected=null;if(mv.from+mv.to+(mv.promotion||'')===tasks[index].uci){solved=true;score++;feedback.className='board-feedback success';feedback.textContent='Muito bem! '+tasks[index].why;next.hidden=false;next.textContent=index===0?'Próximo desafio →':'Ver resultado';}else{game.undo();feedback.className='board-feedback error';feedback.textContent='Lance legal, mas não é a solução temática. '+tasks[index].hint;}draw();return;}}
+  const p=game.get(sq);selected=p&&p.color===game.turn()?sq:null;draw();
+ });
+ next.onclick=()=>{if(index===0){index=1;load();}else{question.textContent='Resultado da demonstração';feedback.className='board-feedback success';feedback.textContent='Acertaste '+score+'/2. Na Área Premium vais encontrar a mesma metodologia, com níveis, explicações e exercícios completos.';next.textContent='Aceder à Área Premium';next.onclick=()=>$('authPanel')?.scrollIntoView({behavior:'smooth',block:'center'});}};
+ load();
+}
+\nfunction renderBoard(root,game,selected,onSquare){
  root.innerHTML='';const glyph={w:{k:'♔',q:'♕',r:'♖',b:'♗',n:'♘',p:'♙'},b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}};
  const board=game.board();
  for(let r=0;r<8;r++)for(let f=0;f<8;f++){const p=board[r][f],sq='abcdefgh'[f]+(8-r),b=document.createElement('button');b.type='button';b.className='classroom-square '+((r+f)%2?'dark':'light')+(selected===sq?' selected':'');b.textContent=p?glyph[p.color][p.type]:'';b.setAttribute('aria-label',sq);b.onclick=()=>onSquare(sq);root.appendChild(b);}
