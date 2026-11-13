@@ -47,3 +47,10 @@
 :root[data-theme="light"] .lba-metric,:root[data-theme="light"] .lba-suite-card{background:#fff}
 :root[data-theme="light"] .lba-form input,:root[data-theme="light"] .lba-form textarea,:root[data-theme="light"] .lba-form select,:root[data-theme="light"] .lba-inline-form input{background:#f7f8fa;color:#20232a}
 @media(max-width:680px){.lba-suite-head{display:block}.lba-suite-status{display:inline-block;margin-top:12px}.lba-metric-grid{grid-template-columns:1fr}.lba-dashboard-grid,.lba-two-col{grid-template-columns:1fr}.lba-inline-form{display:grid}.lba-inline-form button{width:100%}.lba-suite-nav button{padding:11px 10px;font-size:10px}}
+
+#suiteStatus:empty{display:none}
+.lba-eval-card{margin:14px 0;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--panel2)}
+.lba-eval-graph{width:100%;height:auto;max-height:190px;display:block}
+.eval-zero{stroke:var(--line);stroke-dasharray:4 5;stroke-width:1}
+.eval-line{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.eval-point{fill:var(--gold);stroke:var(--panel);stroke-width:1.5}
