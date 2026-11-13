@@ -90,3 +90,21 @@
 .lba-analysis-lines{display:grid;gap:4px;margin-top:10px}
 .lba-analysis-replay .lba-board-frame{max-width:560px}
 .lba-analysis-replay button:disabled{opacity:.42;cursor:not-allowed}
+
+/* Análise por lance: classificação, navegação e resumo */
+.lba-analysis-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.lba-analysis-summary>span{display:grid;gap:4px;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}
+.lba-analysis-summary b{font:800 22px Manrope;color:var(--gold)}
+.lba-analysis-summary small{font-size:9px;color:var(--muted)}
+.lba-move-list{display:grid;gap:5px;max-height:430px;overflow:auto;margin-top:12px}
+.lba-move-row{display:grid;grid-template-columns:48px minmax(42px,.55fr) minmax(90px,1fr) auto;align-items:center;gap:8px;width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);text-align:left;cursor:pointer}
+.lba-move-row.selected{border-color:var(--gold);background:#d8a92e12}
+.lba-move-number{font-size:10px;color:var(--muted);font-weight:800}
+.lba-move-san{font-size:12px;font-weight:800}
+.lba-move-row small{font-size:9px;color:var(--muted);text-align:right}
+.lba-category{display:inline-flex;justify-content:center;padding:5px 7px;border-radius:20px;font-size:9px;font-weight:800;background:#80808018;color:var(--muted)}
+.lba-category.blunder,.lba-category.mistake{background:#c743431c;color:#df6c6c}
+.lba-category.inaccuracy{background:#d89b2d20;color:#d89b2d}
+.lba-category.excellent,.lba-category.great,.lba-category.brilliant{background:#43b5811c;color:#43b581}
+.lba-category.book{background:#648bd21c;color:#7fa5ed}
+@media(max-width:520px){.lba-move-row{grid-template-columns:34px 34px minmax(78px,1fr);gap:6px;padding:8px}.lba-move-row small{grid-column:3;text-align:left}.lba-category{font-size:8px;padding:4px 5px}}
