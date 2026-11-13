@@ -187,7 +187,7 @@ const readingRefs={
  'Cálculo e Lances Candidatos':['Alexander Kotov — Think Like a Grandmaster','John Nunn — Secrets of Practical Chess'],
  'Conversão da Vantagem':['Max Euwe e H. Kramer — The Middlegame','David Bronstein — Zurich International Chess Tournament 1953']
 };
-Object.values(readingRefs).forEach(refs=>{if(!refs.some(ref=>ref.includes('Understanding Chess Middlegames')))refs.unshift('John Nunn — Understanding Chess Middlegames (leitura complementar; conceitos aplicados em conteúdo original LBA)');});
+Object.values(readingRefs).forEach(refs=>{if(!refs.some(ref=>ref.includes('Understanding Chess Middlegames')))refs.unshift('John Nunn — Understanding Chess Middlegames (leitura complementar; conceitos aplicados em conteúdo original LBA)');if(!refs.some(ref=>ref.includes('Zurich International Chess Tournament 1953')))refs.push('David Bronstein — Zurich International Chess Tournament 1953 (estudo de partidas clássicas anotadas; análise estratégica original LBA)');});
 const deepLessons={
 'Avaliação por Desequilíbrios':{
 intro:'A avaliação estratégica não é uma votação de factores nem uma impressão estética. É um diagnóstico que identifica qual característica da posição tem maior peso e como ela pode ser transformada numa vantagem concreta. Uma posição pode ter material igual, mas actividade desigual; pode ter um peão a menos, mas compensação em desenvolvimento, rei exposto e iniciativa. O jogador forte não pergunta apenas “quem está melhor?”, pergunta “porquê, durante quanto tempo e qual é o plano que torna essa vantagem mais relevante?”.',
