@@ -60,12 +60,13 @@ export class MotorDeAnalisePremium {
   public carregarPartidaComAnalise(
     historicoLances: string[],
     avaliacoesEngine: Array<number | null | undefined>,
-    opcoesPorLance: Array<OpcoesClassificacao | undefined> = []
+    opcoesPorLance: Array<OpcoesClassificacao | undefined> = [],
+    avaliacaoInicialCp: number | null = null
   ): LanceAnalisado[] {
     this.chess = new Chess();
     this.historicoAnalise = [];
     this.modoRecomeco = this.reiniciarEstadoRecomeco();
-    let evalAnterior: number | null = 30;
+    let evalAnterior: number | null = Number.isFinite(avaliacaoInicialCp) ? avaliacaoInicialCp : null;
 
     for (let i = 0; i < historicoLances.length; i++) {
       const fenAntes = this.chess.fen();
