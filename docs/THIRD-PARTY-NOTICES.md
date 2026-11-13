@@ -17,7 +17,9 @@ O projecto oficial declara expressamente que, quando Chessground é utilizado nu
 - **Licença do motor:** GNU GPL versão 3 (GPL-3.0).
 - **Pacote/versionamento utilizado no URL CDN:** `stockfish@19.0.1`.
 - **Código-fonte do wrapper e build:** https://github.com/nmrugg/stockfish.js/tree/v19.0.1
+- **Texto integral incluído neste repositório:** [`LICENSES/Stockfish-COPYING.txt`](../LICENSES/Stockfish-COPYING.txt)
 - **Projecto upstream Stockfish:** https://github.com/official-stockfish/Stockfish
+- **Texto integral incluído neste repositório:** [`LICENSES/GPL-3.0.txt`](../LICENSES/GPL-3.0.txt)
 - **Texto da GPLv3:** https://www.gnu.org/licenses/gpl-3.0.html
 
 A versão exacta do pacote, os ficheiros JS/WASM efectivamente servidos e o código-fonte/instruções que os produzem devem ser arquivados juntos na preparação da distribuição. Não presumir que executar o motor num Worker ou comunicar por UCI elimina obrigações GPL.
@@ -27,6 +29,7 @@ A versão exacta do pacote, os ficheiros JS/WASM efectivamente servidos e o cód
 - **Função:** validação de regras, movimentos, FEN e PGN.
 - **Licença:** BSD 2-Clause.
 - **Origem:** https://github.com/jhlywa/chess.js
+- **Texto integral incluído neste repositório:** [`LICENSES/BSD-2-Clause-chessjs.txt`](../LICENSES/BSD-2-Clause-chessjs.txt)
 - **Registo do pacote 1.4.0:** https://www.npmjs.com/package/chess.js/v/1.4.0
 
 A distribuição deve conservar o aviso de copyright e o texto da licença BSD-2-Clause aplicável.
@@ -41,7 +44,7 @@ A opção escolhida para este projecto é **manter Chessground e preparar a dist
 
 1. disponibilizar aos utilizadores do website o código-fonte correspondente do trabalho combinado que incorpora Chessground, sob os termos GPL aplicáveis;
 2. incluir os textos integrais das licenças e os avisos de copyright;
-3. disponibilizar o código-fonte correspondente exacto do Stockfish.js 19.0.1 e os materiais necessários para reconstruir os binários JS/WASM distribuídos;
+3. disponibilizar o código-fonte correspondente exacto do Stockfish.js 19.0.1 e os materiais necessários para reconstruir os binários JS/WASM distribuídos; os textos GPL foram agora adicionados em `LICENSES/`;
 4. manter uma cópia arquivada das versões exactas efectivamente servidas, incluindo os ficheiros WASM e os recursos de peças.
 
 **Bloqueio actual:** o repositório de trabalho está privado. Este documento e os links upstream não tornam, por si só, o código-fonte combinado da LBA publicamente acessível aos utilizadores do website. Antes de distribuir a versão com Chessground, será necessário aprovar e executar uma forma pública de disponibilização do código-fonte (por exemplo, tornar público o repositório/branch de origem ou publicar um arquivo completo equivalente). Nenhuma alteração de visibilidade foi feita.
