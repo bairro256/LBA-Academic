@@ -25,8 +25,8 @@ export function renderLivroVivo({ root, record = async () => {} }) {
       <article class="lba-livebook-book">
         <header class="lba-livebook-header">
           <span class="mini-label">CADERNO DE ESTUDO · POSICIONAL</span>
-          <h3 id="liveBookTitle">O centro e o desenvolvimento</h3>
-          <p id="liveBookChapter">Capítulo 1 · Princípios fundamentais</p>
+          <h3 id="liveBookTitle">O Meu Sistema · Aron Nimzowitsch</h3>
+          <p id="liveBookChapter">Estudo original · Centro e desenvolvimento</p>
         </header>
         <div class="lba-livebook-content">
           <p>Desenvolver significa colocar as peças em casas onde participem no jogo. Na abertura, cada tempo é valioso: em vez de mover repetidamente a mesma peça sem necessidade, procura desenvolver peças diferentes, disputar o centro e preparar a segurança do rei.</p>
@@ -103,13 +103,13 @@ export function renderLivroVivo({ root, record = async () => {} }) {
         if (move.san === 'Bb5' || move.san === 'Bc4') {
           challengeSolved = true;
           challengeStatus.textContent = 'Muito bem! ' + move.san + ' é um desenvolvimento activo: o bispo entra no jogo e as Brancas disputam casas importantes. Podes continuar a explorar a posição.';
-          record('finais', 'estrategia', 'completed', null, 0, { kind: 'live-book-challenge', move: move.san }).catch(() => {});
+          record('meio-jogo', 'estrategia', 'completed', null, 0, { kind: 'live-book-challenge', move: move.san }).catch(() => {});
         } else {
           challengeStatus.textContent = move.san + ' é legal, mas não é uma das duas respostas pedidas. Repara nas casas b5 e c4 e tenta novamente com o desafio reiniciado.';
         }
       } else {
         boardStatus.textContent = 'Lance ' + move.san + ' jogado. ' + (freeMode ? 'Estás em exploração livre.' : 'Carrega em “Voltar ao texto” para regressar à posição seleccionada no capítulo.');
-        record('finais', 'estrategia', 'attempt', null, 0, { kind: 'live-book-exploration', move: move.san }).catch(() => {});
+        record('meio-jogo', 'estrategia', 'attempt', null, 0, { kind: 'live-book-exploration', move: move.san }).catch(() => {});
       }
     } catch (error) {
       renderBoard();
