@@ -8,7 +8,9 @@ Este directório contém os contratos e algoritmos-base TypeScript para evoluir 
 - `middlegame.ts`: replay legal de variantes de cálculo e filtros por estruturas.
 - `endgames.ts`: contrato de Tablebase e detecção de perda de resultado teórico, com perspectiva do lado a jogar.
 - `analysis.ts`: avaliação normalizada à perspectiva do aluno e prompt pedagógico limitado a dados verificáveis.
-- `livro-vivo.js`: capítulo interactivo com posições sincronizadas por lance, exploração livre e desafio legal de desenvolvimento inspirado em princípios clássicos; texto pedagógico original.
+- `CapitulosDados.js`: banco de dados com três capítulos, posições FEN, lances clicáveis e soluções de desafios.
+- `livro-vivo.js`: leitor interactivo com navegação entre capítulos, posições sincronizadas, exploração livre e desafios legais; regista tentativas sem atribuir pontos artificiais.
+- `validate-livebook.mjs`: valida automaticamente FENs, lado a jogar e legalidade das soluções dos desafios.
 
 ## Stack de produção recomendada
 - UI actual: HTML/CSS/ES Modules, com migração incremental; não introduzir React/Flutter sem necessidade.
