@@ -31,7 +31,7 @@ export function updateStreak(previousDays: string[], today: string): { days: num
   const yesterday = new Date(`${today}T12:00:00`);
   yesterday.setDate(yesterday.getDate() - 1);
   const y = localDateKey(yesterday);
-  return { days: unique.includes(y) ? countConsecutive(unique, y) + 1 : 1, activeToday: false };
+  return { days: unique.includes(y) ? countConsecutive(unique, y) + 1 : 1, activeToday: true };
 }
 function countConsecutive(days: string[], from: string): number {
   const set = new Set(days); let count = 0; const d = new Date(`${from}T12:00:00`);
