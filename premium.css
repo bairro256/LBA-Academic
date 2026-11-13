@@ -101,3 +101,39 @@
  .demo-board-layout{grid-template-columns:1fr}
  .demo-board-layout .classroom-board{width:min(100%,360px)}
 }
+
+
+/* Conteúdo pedagógico estruturado — sala Estruturas de Peões */
+.lesson-concept{padding:14px 0;border-bottom:1px solid var(--line)}
+.lesson-concept h4,.lesson-recipe h4,.lesson-mistakes h4,.lesson-checklist h4{font:800 13px Manrope;margin:0 0 7px;color:var(--text)}
+.lesson-concept p,.lesson-recipe li,.lesson-mistakes li,.lesson-checklist li{font-size:11px;line-height:1.8;color:var(--muted)}
+.lesson-recipe,.lesson-mistakes,.lesson-checklist{padding:14px 16px;margin:14px 0;border:1px solid var(--line);border-radius:11px;background:var(--panel2)}
+.lesson-recipe ol,.lesson-mistakes ul,.lesson-checklist ol{padding-left:20px;margin:8px 0 0}
+.lesson-recipe li,.lesson-mistakes li,.lesson-checklist li{padding:3px 0}
+.practice-counter,.quiz-top{display:flex;justify-content:space-between;gap:12px;padding:9px 12px;border-radius:9px;background:var(--panel2);border:1px solid var(--line);font-size:10px;font-weight:800;color:var(--gold);margin:12px 0}
+.practice-controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}
+.model-games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.model-game{padding:15px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.model-game h4{font:800 15px Manrope;margin:7px 0}
+.model-game p{font-size:11px;line-height:1.7;color:var(--muted)}
+.model-game>b{font-size:10px;color:var(--gold)}
+.model-game a{display:inline-block;margin:9px 8px 0 0;font-size:10px;color:var(--gold);text-decoration:underline}
+.game-meta{font-size:9px!important}
+.game-replay{padding:15px;margin-top:16px;border:1px solid #ffc10755;border-radius:12px;background:var(--panel2)}
+.game-replay-head{display:flex;justify-content:space-between;gap:12px;font-size:11px}
+.quiz-top{color:var(--text)}
+.quiz-question{padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.quiz-question h4{font:800 15px Manrope;line-height:1.5;margin:0 0 12px}
+.quiz-options{display:grid;gap:8px}
+.quiz-option{padding:12px;text-align:left;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);font-size:11px;cursor:pointer}
+.quiz-option:hover:not(:disabled){border-color:#ffc10799}
+.quiz-option:disabled{cursor:default;opacity:.8}
+.quiz-option.correct{border-color:#4caf80;background:#4caf8015}
+.quiz-option.incorrect{border-color:#df6565;background:#df656515}
+.quiz-result{text-align:center;padding:24px 15px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.quiz-result>strong{font:900 38px Manrope;color:var(--gold)}
+.quiz-result h4{font:800 17px Manrope;margin:8px}
+.quiz-result p{font-size:11px;line-height:1.7;color:var(--muted)}
+:root[data-theme="light"] .lesson-concept h4,:root[data-theme="light"] .lesson-recipe h4,:root[data-theme="light"] .lesson-mistakes h4,:root[data-theme="light"] .lesson-checklist h4{color:#20232a}
+:root[data-theme="light"] .model-game,:root[data-theme="light"] .quiz-question,:root[data-theme="light"] .quiz-result{background:#f8f8f6}
+@media(max-width:650px){.model-games{grid-template-columns:1fr}.game-replay-head{display:block}.game-replay-head span{display:block;margin-top:5px}}
