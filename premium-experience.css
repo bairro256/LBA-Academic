@@ -76,3 +76,7 @@
 
 .lba-promotion-choice{display:flex;align-items:center;gap:7px;margin-right:auto;font-size:10px;color:var(--muted)}
 .lba-promotion-choice select{min-height:36px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);color:var(--text);padding:6px 9px;font:700 11px Manrope}
+
+
+/* Treino às cegas: ocultação das peças após cinco meios-lances */
+.lba-blindfold-frame.is-blindfold .cg-wrap piece{opacity:0!important;transition:opacity .18s ease}
