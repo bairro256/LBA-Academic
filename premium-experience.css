@@ -80,3 +80,13 @@
 
 /* Treino às cegas: ocultação das peças após cinco meios-lances */
 .lba-blindfold-frame.is-blindfold .cg-wrap piece{opacity:0!important;transition:opacity .18s ease}
+
+
+/* Revisão de partidas: candidatos pedagógicos e replay */
+.lba-analysis-replay{margin-top:14px}
+#analysisReviewFlags{display:grid;gap:4px;margin-top:10px}
+#analysisReviewFlags .lba-list-row{padding:9px 0}
+#analysisReviewFlags .lba-secondary{flex:0 0 auto}
+.lba-analysis-lines{display:grid;gap:4px;margin-top:10px}
+.lba-analysis-replay .lba-board-frame{max-width:560px}
+.lba-analysis-replay button:disabled{opacity:.42;cursor:not-allowed}
