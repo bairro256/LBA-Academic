@@ -16,7 +16,7 @@ function shell(){
  <div class="lba-suite-head"><div><span class="mini-label">LBA PERFORMANCE SYSTEM</span><h2>Centro de treino <em>inteligente</em></h2><p>Um percurso integrado para desenvolver pensamento, técnica e consistência competitiva.</p></div><div class="lba-suite-status"><span class="lba-live-dot"></span> TREINO PREMIUM</div></div>
  <nav class="lba-suite-nav" aria-label="Centro de treino">
  <button data-suite="dashboard" class="active">Visão geral</button><button data-suite="openings">Aberturas</button><button data-suite="middlegame">Meio-jogo</button><button data-suite="endgames">Finais</button><button data-suite="analysis">Análise</button></nav>
- <div id="lbaSuitePanel" class="lba-suite-panel" aria-live="polite"></div>`;
+ <div id="lbaSuitePanel" class="lba-suite-panel" aria-live="polite"></div><div id="suiteStatus" class="lba-feedback" role="status" aria-live="polite"></div>`;
  root.querySelectorAll('[data-suite]').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.suite)));
 }
 function panel(html){$('lbaSuitePanel').innerHTML=html;}
