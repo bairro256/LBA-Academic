@@ -35,7 +35,7 @@
 .lba-primary{background:#b8292f;color:white;border:1px solid #b8292f}.lba-secondary{background:transparent;color:var(--text);border:1px solid var(--line)}
 .lba-primary:disabled{opacity:.5;cursor:wait}
 .lba-form{display:grid;gap:12px}.lba-form label{display:grid;gap:6px;font-size:10px;font-weight:700;color:var(--muted)}
-.lba-form input,.lba-form textarea,.lba-form select,.lba-inline-form input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font:12px inherit}
+.lba-form input,.lba-form textarea,.lba-form select,.lba-inline-form input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font:inherit;font-size:12px}
 .lba-form textarea{resize:vertical;line-height:1.6}.lba-inline-form{display:flex;gap:8px}.lba-inline-form button{flex:0 0 auto}
 .lba-feedback{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);font-size:11px;line-height:1.7;color:var(--muted);overflow-wrap:anywhere}
 .lba-feedback.success{border-color:#43b581;color:#43b581}.lba-feedback.error{border-color:#d65a5a;color:#d65a5a}
