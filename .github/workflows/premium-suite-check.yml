@@ -1,0 +1,22 @@
+name: Premium suite checks
+on:
+  push:
+    branches: [premium-v2-implementation]
+  pull_request:
+    branches: [main]
+jobs:
+  syntax-and-types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check browser modules
+        run: |
+          node --input-type=module --check < premium.js
+          node --input-type=module --check < premium-experience.js
+      - name: Check TypeScript engine modules
+        run: |
+          npm install --no-save --no-package-lock typescript@5.9.3 chess.js@1.4.0
+          npx tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --strict premium-engine/*.ts
