@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Chess } from 'https://esm.sh/chess.js@1.4.0';
+import { Chessground } from 'https://esm.sh/chessground@9.2.1';
 
 const DB_URL='https://ksejqypwlmwwayxtievk.supabase.co';
 const DB_KEY='sb_publishable_TPeGeLoBdlva7yQqldtbAg_YYi0uHnd';
@@ -88,12 +89,59 @@ function analyseFen(fen,multiPv=3,depth=12){
  });
 }
 async function middlegame(){
- panel(`<div class="lba-module-intro"><span class="mini-label">MÓDULO 02 · CÁLCULO E ESTRATÉGIA</span><h3>Laboratório de Meio-Jogo</h3><p>Valida linhas legais sem depender da memória visual e analisa posições com Stockfish WASM num Web Worker. A engine é carregada apenas quando pedires uma análise.</p></div>
- <div class="lba-two-col"><article class="lba-suite-card"><h3>Cálculo abstracto</h3><form id="calcForm" class="lba-form"><label>FEN da posição<textarea id="calcFen" rows="2">r1bq1rk1/ppp2ppp/2n2n2/2bp4/2B5/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 8</textarea></label><label>A tua linha (SAN separado por espaços)<input id="calcLine" placeholder="Nxd5 Nxd5 Nxd5"></label><label>Estrutura de peões<select id="pawnStructure"><option value="other">Geral</option><option value="carlsbad">Carlsbad</option><option value="isolated-queen-pawn">Peão isolado da dama</option><option value="hanging-pawns">Peões pendurados</option><option value="pawn-chain">Cadeia de peões</option><option value="minority-attack">Ataque de minoria</option><option value="open-center">Centro aberto</option></select></label><button class="lba-primary">Validar cálculo</button></form><div id="calcFeedback" class="lba-feedback">A linha será reproduzida lance a lance e validada pelas regras.</div></article>
- <article class="lba-suite-card"><span class="mini-label">ANÁLISE DE POSIÇÃO</span><h3>Stockfish · três candidatos</h3><p>Avaliação local no dispositivo. Em telemóveis, usa profundidade moderada para preservar bateria e fluidez.</p><button id="engineAnalyse" class="lba-primary">Analisar posição</button><div id="engineFeedback" class="lba-feedback">A engine ainda não foi carregada.</div></article></div>
- <article class="lba-suite-card"><span class="mini-label">TEMAS E ESTRUTURAS</span><h3>Biblioteca de estudo</h3><p>Carlsbad · Peão isolado · Peões pendurados · Cadeias de peões · Ataque de minoria · Centro aberto. Os exercícios desta área devem ser curados e associados a cada estrutura antes de serem apresentados como biblioteca completa.</p></article>`);
- $('calcForm').onsubmit=e=>{e.preventDefault();try{const chess=new Chess($('calcFen').value.trim());const moves=$('calcLine').value.trim().split(/\s+/).filter(Boolean);if(!moves.length)throw new Error('Introduz uma linha de cálculo.');moves.forEach(s=>{if(!chess.move(s))throw new Error('Lance ilegal: '+s);});$('calcFeedback').textContent='Linha legal até ao fim ('+moves.length+' meios-lances). Posição final: '+chess.fen()+'. Estrutura seleccionada: '+$('pawnStructure').selectedOptions[0].textContent+'.';record('meio-jogo','estrategia','attempt',null,0,{plies:moves.length,structure:$('pawnStructure').value});}catch(err){$('calcFeedback').textContent='Linha inválida: '+err.message;}};
- $('engineAnalyse').onclick=async()=>{const out=$('engineFeedback');out.textContent='A iniciar Stockfish…';$('engineAnalyse').disabled=true;try{const fen=$('calcFen').value.trim()||new Chess().fen();const lines=await analyseFen(fen,3,12);out.innerHTML=lines.map(l=>'<div class="lba-engine-line"><b>#'+l.multipv+' · '+(l.scoreType==='mate'?'Mate em '+l.score:(l.score/100).toFixed(2))+'</b><p>'+esc(l.pv)+'</p></div>').join('')||'A engine não devolveu variantes.';await record('meio-jogo','estrategia','analysis',null,0,{fen,lines});}catch(err){out.textContent='Não foi possível analisar: '+err.message;}finally{$('engineAnalyse').disabled=false;}};
+ panel(`<div class="lba-module-intro"><span class="mini-label">MÓDULO 02 · CÁLCULO E ESTRATÉGIA</span><h3>Laboratório de Meio-Jogo</h3><p>Estuda a posição num tabuleiro interactivo, calcula variantes legais e consulta três candidatos do Stockfish.</p></div>
+ <div class="lba-board-layout">
+  <article class="lba-suite-card lba-board-card">
+   <div class="lba-board-top"><div><span class="mini-label">TABULEIRO DE TREINO</span><h3>Posição de análise</h3></div><span class="lba-tag">1 : 1 · RESPONSIVO</span></div>
+   <div class="lba-board-frame"><div id="lbaTrainingBoard" class="cg-wrap brown cburnett" aria-label="Tabuleiro interactivo de xadrez"></div></div>
+   <div class="lba-board-tools"><button type="button" id="boardFlip" class="lba-secondary">Rodar tabuleiro</button><button type="button" id="boardUndo" class="lba-secondary">Anular lance</button><button type="button" id="boardReset" class="lba-secondary">Repor posição</button></div>
+   <div id="boardCoach" class="lba-board-coach" role="status" aria-live="polite">Tabuleiro pronto. Selecciona uma peça e escolhe uma casa legal.</div>
+  </article>
+  <div class="lba-board-side">
+   <article class="lba-suite-card"><h3>Posição e cálculo</h3><form id="calcForm" class="lba-form">
+    <label>FEN da posição<textarea id="calcFen" rows="3">r1bq1rk1/ppp2ppp/2n2n2/2bp4/2B5/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 8</textarea></label>
+    <div class="lba-board-tools"><button type="button" id="boardLoadFen" class="lba-primary">Carregar FEN</button><button type="button" id="boardCopyFen" class="lba-secondary">Copiar FEN</button></div>
+    <label>A tua linha (SAN separado por espaços)<input id="calcLine" placeholder="Nxd5 Nxd5 Nxd5"></label>
+    <label>Estrutura de peões<select id="pawnStructure"><option value="other">Geral</option><option value="carlsbad">Carlsbad</option><option value="isolated-queen-pawn">Peão isolado da dama</option><option value="hanging-pawns">Peões pendurados</option><option value="pawn-chain">Cadeia de peões</option><option value="minority-attack">Ataque de minoria</option><option value="open-center">Centro aberto</option></select></label>
+    <button class="lba-primary">Validar linha de cálculo</button>
+   </form><div id="calcFeedback" class="lba-feedback">A linha será reproduzida lance a lance e validada pelas regras.</div></article>
+   <article class="lba-suite-card"><span class="mini-label">ANÁLISE DE POSIÇÃO</span><h3>Stockfish · três candidatos</h3><p>Avaliação local no dispositivo. Em telemóveis, usa profundidade moderada para preservar bateria e fluidez.</p><button id="engineAnalyse" class="lba-primary">Analisar posição</button><div id="engineFeedback" class="lba-feedback">A engine ainda não foi carregada.</div></article>
+  </div>
+ </div>
+ <article class="lba-suite-card"><span class="mini-label">TEMAS E ESTRUTURAS</span><h3>Biblioteca de estudo</h3><p>Carlsbad · Peão isolado · Peões pendurados · Cadeias de peões · Ataque de minoria · Centro aberto. Os exercícios serão apresentados como biblioteca completa apenas quando o conteúdo estiver curado e validado.</p></article>`);
+ const boardEl=$('lbaTrainingBoard'),fenEl=$('calcFen'),coach=$('boardCoach');
+ let game=new Chess(),orientation='white',ground=null;
+ const destinations=()=>{
+  const map=new Map();
+  game.moves({verbose:true}).forEach(m=>{if(!map.has(m.from))map.set(m.from,[]);map.get(m.from).push(m.to);});
+  return map;
+ };
+ const refresh=()=>{
+  const fen=game.fen(),turn=game.turn();
+  fenEl.value=fen;
+  ground.set({fen,turnColor:turn==='w'?'white':'black',check:game.isCheck()? (turn==='w'?'white':'black'):false,lastMove:game.history({verbose:true}).slice(-1).map(m=>[m.from,m.to])[0],movable:{free:false,color:'both',dests:destinations(),showDests:true}});
+ };
+ const sayMove=(orig,dest)=>{
+  try{
+   const move=game.move({from:orig,to:dest,promotion:$('promotionChoice')?.value||'q'});
+   if(!move){refresh();return;}
+   refresh();
+   const end=game.isCheckmate()?'Xeque-mate.':game.isDraw()?'A partida terminou empatada.':game.isCheck()?'Xeque.':'';
+   coach.textContent=move.color==='w'?'Brancas: ':'Pretas: ';coach.textContent+=move.san+'. '+(end||'Lance legal. Podes continuar a análise.');
+   record('meio-jogo','estrategia','attempt',null,0,{kind:'board-move',san:move.san,fen:game.fen()});
+  }catch(err){refresh();coach.textContent='Lance não aceite: '+err.message;}
+ };
+ ground=Chessground(boardEl,{fen:game.fen(),orientation,coordinates:true,autoCastle:true,movable:{free:false,color:'both',dests:destinations(),showDests:true},animation:{enabled:true,duration:180},events:{move:sayMove}});
+ $('boardFlip').onclick=()=>{orientation=orientation==='white'?'black':'white';ground.set({orientation});};
+ $('boardUndo').onclick=()=>{const m=game.undo();refresh();coach.textContent=m?'Último lance anulado.':'Ainda não há lances para anular.';};
+ $('boardReset').onclick=()=>{game.reset();refresh();coach.textContent='Posição inicial reposta.';};
+ $('boardLoadFen').onclick=()=>{try{const next=new Chess(fenEl.value.trim());game=next;refresh();coach.textContent='FEN carregada. Posição validada.';}catch(err){coach.textContent='FEN inválida: '+err.message;}};
+ $('boardCopyFen').onclick=()=>{const fen=game.fen();if(navigator.clipboard?.writeText)navigator.clipboard.writeText(fen).then(()=>{coach.textContent='FEN copiada.';}).catch(()=>{coach.textContent=fen;});else coach.textContent=fen;};
+ $('calcForm').onsubmit=e=>{e.preventDefault();try{const chess=new Chess(fenEl.value.trim());const moves=$('calcLine').value.trim().split(/\s+/).filter(Boolean);if(!moves.length)throw new Error('Introduz uma linha de cálculo.');moves.forEach(s=>{if(!chess.move(s))throw new Error('Lance ilegal: '+s);});$('calcFeedback').textContent='Linha legal até ao fim ('+moves.length+' meios-lances). Posição final: '+chess.fen()+'. Estrutura seleccionada: '+$('pawnStructure').selectedOptions[0].textContent+'.';record('meio-jogo','estrategia','attempt',null,0,{plies:moves.length,structure:$('pawnStructure').value});}catch(err){$('calcFeedback').textContent='Linha inválida: '+err.message;}};
+ $('engineAnalyse').onclick=async()=>{const out=$('engineFeedback');out.textContent='A iniciar Stockfish…';$('engineAnalyse').disabled=true;try{const fen=game.fen();const lines=await analyseFen(fen,3,12);out.innerHTML=lines.map(l=>'<div class="lba-engine-line"><b>#'+l.multipv+' · '+(l.scoreType==='mate'?'Mate em '+l.score:(l.score/100).toFixed(2))+'</b><p>'+esc(l.pv)+'</p></div>').join('')||'A engine não devolveu variantes.';await record('meio-jogo','estrategia','analysis',null,0,{fen,lines});}catch(err){out.textContent='Não foi possível analisar: '+err.message;}finally{$('engineAnalyse').disabled=false;}};
+ const resize=()=>{if(ground)ground.redrawAll();};
+ window.addEventListener('resize',resize,{passive:true});
+ if(window.ResizeObserver){const ro=new ResizeObserver(resize);ro.observe($('lbaBoardFrame')||boardEl.parentElement);boardEl._lbaResizeObserver=ro;}
 }
 async function endgames(){
  panel(`<div class="lba-module-intro"><span class="mini-label">MÓDULO 03 · TÉCNICA DE FINAIS</span><h3>Centro de Finais</h3><p>Consulta Syzygy para posições cobertas e identifica se o resultado teórico é vitória, empate ou derrota para o jogador que tem a vez.</p></div>
