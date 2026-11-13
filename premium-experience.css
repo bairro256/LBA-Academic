@@ -108,3 +108,28 @@
 .lba-category.excellent,.lba-category.great,.lba-category.brilliant{background:#43b5811c;color:#43b581}
 .lba-category.book{background:#648bd21c;color:#7fa5ed}
 @media(max-width:520px){.lba-move-row{grid-template-columns:34px 34px minmax(78px,1fr);gap:6px;padding:8px}.lba-move-row small{grid-column:3;text-align:left}.lba-category{font-size:8px;padding:4px 5px}}
+
+
+/* Livro Vivo Interactivo — tabuleiro e leitura responsivos */
+.lba-livebook-workspace{display:grid;grid-template-columns:minmax(280px,.92fr) minmax(0,1.08fr);gap:18px;align-items:start}
+.lba-livebook-board-section{position:sticky;top:14px;min-width:0}
+.lba-livebook-board-frame{max-width:520px}
+.lba-livebook-controls{display:grid;grid-template-columns:1fr 1fr}
+.lba-livebook-controls button{min-width:0}
+.lba-livebook-book{min-width:0;max-height:760px;overflow:auto;padding:clamp(17px,3vw,30px);border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:0 8px 26px #0002}
+.lba-livebook-header{padding-bottom:15px;margin-bottom:17px;border-bottom:1px solid var(--line)}
+.lba-livebook-header h3{margin:7px 0;color:var(--gold);font:800 clamp(20px,3vw,26px) Manrope}
+.lba-livebook-header p{margin:0;color:var(--muted);font-size:11px}
+.lba-livebook-content p{font-size:13px;line-height:1.85;color:var(--text);margin:0 0 17px}
+.lba-livebook-move{display:inline-block;margin:2px 1px;padding:3px 7px;border:1px solid #d8a92e66;border-radius:5px;background:#d8a92e12;color:var(--gold);font:800 12px Manrope;cursor:pointer}
+.lba-livebook-move:hover,.lba-livebook-move:focus-visible{background:#d8a92e2a;outline:2px solid #d8a92e66}
+.lba-livebook-callout,.lba-livebook-challenge{margin:18px 0;padding:15px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:9px;background:var(--panel2)}
+.lba-livebook-callout>b{color:var(--gold);font-size:12px}
+.lba-livebook-callout p,.lba-livebook-challenge p{margin:8px 0 0;font-size:12px}
+.lba-livebook-challenge h4{margin:7px 0;font:800 16px Manrope}
+.lba-livebook-challenge .lba-board-tools{margin-top:12px}
+.btn-active-exploration{background:var(--gold)!important;color:#171512!important;border-color:var(--gold)!important}
+:root[data-theme="light"] .lba-livebook-book{background:#fff}
+:root[data-theme="light"] .lba-livebook-callout,:root[data-theme="light"] .lba-livebook-challenge{background:#f7f4eb}
+@media(max-width:760px){.lba-livebook-workspace{grid-template-columns:minmax(0,1fr)}.lba-livebook-board-section{position:static;width:100%}.lba-livebook-board-frame{max-width:min(100%,560px)}.lba-livebook-book{max-height:none;overflow:visible}.lba-livebook-controls{grid-template-columns:1fr 1fr}}
+@media(max-width:390px){.lba-livebook-controls{grid-template-columns:1fr}.lba-livebook-book{padding:15px}}
