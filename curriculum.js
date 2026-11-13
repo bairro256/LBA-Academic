@@ -101,8 +101,8 @@ const puzzles = {
  'Casas Fracas':{fen:'r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N2/PP1P1PPP/RNBQR1K1 w - - 0 10',setup:[],answer:'d4',hint:'Questiona o centro para ganhar espaço e criar casas de entrada.',why:'d4 desafia a estrutura central. Depois das trocas, procura casas que os peões já não conseguem defender.'},
  'Profilaxia':{fen:'r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N2/PP1P1PPP/RNBQR1K1 w - - 0 10',setup:[],answer:'a4',hint:'Antes de avançar no centro, limita a expansão das Pretas na ala da dama.',why:'a4 questiona a cadeia b5 e pode limitar ...b4. É uma ideia profiláctica: reduzir o plano adversário.'},
  'Oposição':{fen:'8/8/8/4k3/8/4K3/4P3/8 w - - 0 1',setup:[],answer:'Kd3',hint:'Aproxima o rei mantendo atenção à oposição e à casa de passagem.',why:'O rei branco procura apoiar o peão e ganhar espaço. Em finais de peões, a vez de jogar e a oposição são decisivas.'},
- 'Casas-Chave':{fen:'8/8/8/8/4k3/8/4K3/4P3 w - - 0 1',setup:[],answer:'Kd3',hint:'Não empurres o peão imediatamente. Aproxima o rei.',why:'O rei deve participar na luta pelas casas-chave antes de o peão avançar.'},
- 'Finais de Torres':{fen:'8/8/8/8/4k3/8/4K3/4R3 w - - 0 1',setup:[],answer:'Re3+',hint:'Procura um xeque activo que obrigue o rei adversário a reagir.',why:'A actividade da torre é essencial. Usa os xeques para ganhar tempos e melhorar a posição.'}
+ 'Casas-Chave':{fen:'8/8/8/8/4k3/4P3/4K3/8 w - - 0 1',setup:[],answer:'Kd2',hint:'Não empurres o peão imediatamente. Aproxima o rei.',why:'O rei deve participar na luta pelas casas-chave antes de o peão avançar.'},
+ 'Finais de Torres':{fen:'8/8/8/8/5k2/8/3K4/4R3 w - - 0 1',setup:[],answer:'Re4+',hint:'Procura um xeque activo que obrigue o rei adversário a reagir.',why:'A actividade da torre é essencial. Usa os xeques para ganhar tempos e melhorar a posição.'}
 };
 
 const modelGame = {
