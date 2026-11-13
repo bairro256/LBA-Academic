@@ -17,6 +17,7 @@ jobs:
           node --input-type=module --check < premium.js
           node --input-type=module --check < premium-experience.js
           node --input-type=module --check < premium-engine/AnalisePartidaMotor.js
+          node --input-type=module --check < premium-engine/CapitulosDados.js
           node --input-type=module --check < premium-engine/livro-vivo.js
       - name: Check TypeScript engine modules
         run: |
