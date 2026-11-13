@@ -34,5 +34,14 @@ Este directório contém os contratos e algoritmos-base TypeScript para evoluir 
 - O relatório psicológico não deve inferir estados mentais. Pode descrever padrões observáveis (ex.: queda de precisão em posições com pouco tempo) apenas se houver dados de relógio suficientes.
 - “60 fps” é objectivo de interface, não garantia: medir em dispositivos reais, manter a engine fora da thread principal e limitar animações/cálculos.
 
+## Análise de partidas — Módulo 05
+
+- `AnalisePartidaMotor.ts` é a fonte TypeScript tipada do motor pedagógico.
+- `AnalisePartidaMotor.js` é a versão executável no navegador, importada por `premium-experience.js`; manter as duas versões sincronizadas.
+- A interface analisa a posição inicial e cada posição após um meio-lance com Stockfish Multi-PV 3, normaliza todas as avaliações para a perspectiva das Brancas e compara a perda do lado que jogou.
+- O relatório apresenta classificação por lance, variação estimada, linhas candidatas e um desafio interactivo para erros/erros graves.
+- A primeira posição também é avaliada pela engine: não se inventa uma avaliação inicial para classificar o primeiro lance.
+- “Brilhante” e “Teoria” não são atribuídos automaticamente sem confirmação externa; “Melhor lance” depende da correspondência com o primeiro lance da linha principal.
+
 ## Integração
 Os ficheiros são TypeScript-fonte e requerem compilação para JavaScript antes de serem carregados por uma página estática. A área publicada actual não os importa directamente. A integração deve ser feita por etapas, com testes automatizados e validação em navegador móvel, sem substituir a página actualmente publicada.
