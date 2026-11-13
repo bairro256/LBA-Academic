@@ -1,0 +1,32 @@
+/* Identidade e apresentação pública da LBA Academia */
+.official-intro{display:grid;grid-template-columns:1.35fr .65fr;gap:38px;align-items:center;padding:58px 42px;margin:10px auto 70px;border:1px solid rgba(255,255,255,.1);border-radius:24px;background:linear-gradient(125deg,rgba(229,9,20,.10),rgba(255,255,255,.025) 55%,rgba(255,193,7,.07))}
+.official-kicker{display:block;color:var(--gold);font-size:10px;font-weight:800;letter-spacing:1.7px}
+.official-intro h2,.official-pricing h2{font:800 clamp(29px,3.4vw,42px)/1.18 Manrope,sans-serif;letter-spacing:-1.5px;margin:14px 0}
+.official-intro h2 span{color:var(--gold)}
+.official-intro p{max-width:690px;color:#b7b7bf;font-size:14px;line-height:1.8}
+.official-points{display:grid;gap:10px;margin-top:22px;color:#e2e2e6;font-size:12px}
+.official-intro-mark{min-height:205px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(255,193,7,.25);border-radius:20px;background:radial-gradient(circle,rgba(255,193,7,.10),rgba(0,0,0,.12) 70%)}
+.official-intro-mark span{font-size:88px;line-height:1;color:var(--gold);text-shadow:0 12px 35px rgba(255,193,7,.18)}
+.official-intro-mark b{margin-top:14px;font-size:10px;letter-spacing:2px}
+.official-intro-mark small{margin-top:5px;color:var(--muted);font-size:11px}
+.official-pricing{padding:20px 0 88px;scroll-margin-top:100px}
+.official-pricing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.official-plan{display:flex;flex-direction:column;padding:27px 24px;border:1px solid var(--line);border-radius:19px;background:linear-gradient(150deg,rgba(255,255,255,.045),rgba(255,255,255,.012));min-width:0}
+.official-plan-featured{border-color:rgba(255,193,7,.48);box-shadow:0 15px 45px rgba(255,193,7,.07);background:linear-gradient(155deg,rgba(255,193,7,.09),rgba(255,255,255,.015))}
+.official-plan-label{font-size:9px;font-weight:800;letter-spacing:1.6px;color:var(--gold)}
+.official-plan h3{font:700 20px Manrope;margin:12px 0 6px}
+.official-price{font:800 clamp(29px,3vw,38px) Manrope;letter-spacing:-1.4px;margin:8px 0 15px}
+.official-price small{font:700 12px 'DM Sans',sans-serif;color:var(--muted);letter-spacing:0}
+.official-plan ul{list-style:none;padding:0;margin:0 0 24px;display:grid;gap:12px;flex:1}
+.official-plan li{font-size:12px;color:#c8c8cf}
+.official-plan li:before{content:'✓';color:var(--gold);font-weight:800;margin-right:9px}
+.official-plan .btn{min-height:46px;font-size:11px}
+.official-pricing-note{margin:18px 0 30px;color:var(--muted);font-size:11px;line-height:1.7}
+.official-contact{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:27px 30px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.025);scroll-margin-top:100px}
+.official-contact h3{font:700 20px Manrope;margin:8px 0}
+.official-contact p{font-size:12px;color:var(--muted);margin:0}
+.official-contact-actions{display:flex;flex-direction:column;align-items:flex-start;gap:10px;flex-shrink:0}
+.official-email,.footer-official-contact a{font-size:11px;color:#d8d8de;text-decoration:underline;text-underline-offset:3px}
+.footer-official-contact{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;padding:0 0 20px}
+@media(max-width:850px){.official-intro{grid-template-columns:1fr;padding:34px 25px}.official-intro-mark{min-height:160px}.official-pricing-grid{grid-template-columns:1fr 1fr}.official-contact{align-items:flex-start;flex-direction:column}}
+@media(max-width:560px){.official-pricing-grid{grid-template-columns:1fr}.official-plan{padding:24px 21px}.official-contact{padding:23px 20px}.official-contact-actions{width:100%}.official-contact-actions .btn{width:100%}.official-intro{margin-bottom:45px}.official-pricing{padding-bottom:65px}.footer-official-contact{flex-direction:column;align-items:center;gap:8px}}
