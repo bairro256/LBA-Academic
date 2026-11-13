@@ -150,3 +150,8 @@
 .premium-demo-link h2{font:800 20px Manrope;margin:6px 0}
 .premium-demo-link p{font-size:11px;line-height:1.7;color:var(--muted);margin:0;max-width:650px}
 @media(max-width:650px){.premium-demo-link{display:block}.premium-demo-link .btn{width:100%;margin-top:14px}}
+
+.demo-game-board-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,.65fr);gap:18px;align-items:center;margin:14px 0}
+.demo-game-board-layout .classroom-board{width:min(100%,400px)}
+.demo-game-board-layout .practice-controls{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:650px){.demo-game-board-layout{grid-template-columns:1fr}.demo-game-board-layout .classroom-board{width:min(100%,360px)}}
