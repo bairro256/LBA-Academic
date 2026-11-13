@@ -151,7 +151,7 @@ export function renderEstudosInteractivos({root,record=async()=>{}}){
    if(attempt.san===challenge.expected){
     $('lbaGameDecisionFeedback').textContent='Correcto. '+challenge.note.why;
     $('lbaGameDecisionFeedback').classList.add('is-correct');
-    challenge=null;$('lbaGameExitChallenge').disabled=false;
+    ply++;challenge=null;$('lbaGameExitChallenge').disabled=false;$('lbaGameMoveCounter').textContent='Meio-lance '+ply+' / '+history.length+' · decisão correcta';renderMoves();
     Promise.resolve(record('livro-vivo','partidas','attempt',100,0,{game:GAMES[gameIndex].id,move:attempt.san,correct:true})).catch(()=>{});
    }else{
     const played=attempt.san;game=new Chess();for(let i=0;i<ply;i++)game.move(history[i].san);
@@ -175,7 +175,7 @@ export function renderEstudosInteractivos({root,record=async()=>{}}){
  $('lbaGameNext').addEventListener('click',()=>{if(ply<history.length){free=false;playNext();}});
  $('lbaGameFree').addEventListener('click',()=>{challenge=null;free=true;setBoard(true);status.textContent='Exploração livre: joga qualquer lance legal e continua a partir desta posição. Para regressar à partida, usa Próximo lance.';});
  $('lbaGameChallenge').addEventListener('click',()=>{
-  const data=GAMES[gameIndex],note=data.notes.find(n=>n.n===Math.ceil((ply+1)/2)&&n.side===(ply%2?'w':'b'));
+  const data=GAMES[gameIndex],note=data.notes.find(n=>((n.n-1)*2+(n.side==='b'?1:0))===ply);
   if(!note){$('lbaGameDecision').hidden=false;$('lbaGameDecisionText').textContent='Esta posição não tem ainda um comentário de decisão específico. Escolhe um lance e explica mentalmente o teu plano antes de continuar.';challenge={expected:history[ply]?.san||'',note:{why:'Compara o teu lance com a continuação histórica e identifica as diferenças na posição.'}};}
   else{challenge={expected:note.move,note};$('lbaGameDecision').hidden=false;$('lbaGameDecisionText').textContent='Encontra '+(ply%2?'para as Pretas':'para as Brancas')+' o lance que mantém a ideia: '+note.title+'. Joga no tabuleiro.';}
   $('lbaGameDecisionFeedback').textContent='Ainda não foi avaliado. Pensa antes de mover.';$('lbaGameExitChallenge').disabled=false;free=false;setBoard(true);
