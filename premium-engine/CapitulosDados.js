@@ -49,7 +49,6 @@ export const BANCO_LIVROS_PREMIUM = [
       { tipo: 'desafio_interativo', fenBase: '4k3/8/8/3p4/8/5N2/8/4K3 w - - 0 1', lancesCorretos: ['Nd4'], vezDeJogar: 'w', instrucao: 'Aplica o princípio do bloqueio: joga 1.Cd4, colocando o cavalo directamente à frente do peão isolado de d5.' }
     ],
     historicoFens: [
-      '4k3/8/8/3p4/8/8/8/4K3 w - - 0 1',
       '4k3/8/8/3p4/8/5N2/8/4K3 b - - 0 1'
     ]
   }
