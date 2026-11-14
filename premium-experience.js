@@ -124,7 +124,7 @@ async function middlegame(){
   {id:'eslava',side:'PRETAS',name:'Defesa Eslava',line:'Peões d5/c6 · bispo c8 · rupturas ...c5 e ...e5',pgn:'1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 dxc4 5. a4 Bf5 6. e3 e6 7. Bxc4',concept:'A estrutura d5/c6 dá solidez, mas as Pretas precisam libertar o bispo de c8 e escolher entre ...c5 e ...e5 para desafiar o centro.',plans:['Completar o desenvolvimento do bispo c8','Preparar ...c5 ou ...e5 sem ceder casas importantes','Usar a coluna c quando a posição abrir']},
   {id:'india-rei',side:'PRETAS',name:'Defesa Índia do Rei',line:'Centro fechado · ...f5 · expansão b4/c5',pgn:'1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6',concept:'A estrutura pode fechar o centro e permitir jogo de ataque na ala do rei. As Pretas devem coordenar ...f5 com a pressão central e vigiar a expansão branca na ala da dama.',plans:['Preparar ...f5 com apoio das peças','Manter pressão sobre d4 e o centro','Calcular a corrida de planos nas duas alas']}
  ];
- let current=studies[0],game=new Chess(),orientation='white',selected=null,lastMove=null,exerciseReady=false,exerciseLevel='plano',lastPlayed=null;
+ let current=studies[0],game=new Chess(),orientation='white',selected=null,lastMove=null,exerciseReady=false,exerciseLevel='plano',lastPlayed=null,lastPlayedUci=null,exerciseStartFen=null;
  const glyph={w:{k:'♔',q:'♕',r:'♖',b:'♗',n:'♘',p:'♙'},b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}};
  const safe=(v)=>esc(v);
  panel([
@@ -161,35 +161,36 @@ async function middlegame(){
  function loadStudy(study){
   if(!study)return;current=study;game=new Chess();
   try{game.loadPgn(study.pgn);}catch(err){boardFeedback.textContent='Não foi possível carregar a linha-modelo: '+err.message;return;}
-  selected=null;lastMove=null;lastPlayed=null;exerciseReady=false;
+  selected=null;lastMove=null;lastPlayed=null;lastPlayedUci=null;exerciseStartFen=null;exerciseReady=false;
   $('validateStudyMove').disabled=true;$('studyHint').disabled=true;$('exercisePrompt').textContent='Prepara o exercício para receber a posição e o desafio.';
   $('exerciseFeedback').textContent='O teu resultado será registado no progresso de Estratégia.';
   updateStudyText();renderGrid();renderBoard();boardFeedback.textContent='Posição-modelo carregada. Prepara o exercício para começar.';
  }
  function onSquare(square){
+  if(lastPlayed){boardFeedback.textContent='Já registaste um lance nesta tentativa. Valida a decisão ou prepara novamente o exercício.';return;}
   if(!exerciseReady){boardFeedback.textContent='Primeiro selecciona “Preparar exercício”.';return;}
   if(selected){
    try{
     const move=game.move({from:selected,to:square,promotion:'q'});
-    if(move){lastMove=[move.from,move.to];lastPlayed=move.san;selected=null;renderBoard();boardFeedback.textContent='Lance legal: '+move.san+'. Agora explica o plano e calcula a resposta adversária.';$('validateStudyMove').disabled=false;return;}
+    if(move){lastMove=[move.from,move.to];lastPlayed=move.san;lastPlayedUci=move.from+move.to+(move.promotion||'');selected=null;renderBoard();boardFeedback.textContent='Lance legal: '+move.san+'. Agora explica o plano e calcula a resposta adversária.';$('validateStudyMove').disabled=false;return;}
    }catch(e){}
   }
   const piece=game.get(square);selected=piece&&piece.color===game.turn()?square:null;renderBoard();
  }
  function prepare(){
   try{game=new Chess();game.loadPgn(current.pgn);}catch(e){boardFeedback.textContent='Erro ao preparar a posição.';return;}
-  selected=null;lastMove=null;lastPlayed=null;exerciseReady=true;renderBoard();
+  selected=null;lastMove=null;lastPlayed=null;lastPlayedUci=null;exerciseReady=true;exerciseStartFen=game.fen();renderBoard();
   $('exercisePrompt').textContent=prompts[exerciseLevel];$('validateStudyMove').disabled=true;$('studyHint').disabled=false;
   $('exerciseFeedback').textContent='Exercício preparado. Joga um lance legal no tabuleiro e valida a tua decisão.';
   boardFeedback.textContent='Exercício pronto. A posição foi reposta à linha-modelo.';
  }
  $('studyFlip').onclick=()=>{orientation=orientation==='white'?'black':'white';renderBoard();};
- $('studyUndo').onclick=()=>{const m=game.undo();selected=null;lastMove=game.history({verbose:true}).slice(-1).map(x=>[x.from,x.to])[0]||null;lastPlayed=null;renderBoard();boardFeedback.textContent=m?'Último lance anulado.':'Ainda não há lances para anular.';$('validateStudyMove').disabled=true;};
+ $('studyUndo').onclick=()=>{const m=game.undo();selected=null;lastMove=game.history({verbose:true}).slice(-1).map(x=>[x.from,x.to])[0]||null;lastPlayed=null;lastPlayedUci=null;renderBoard();boardFeedback.textContent=m?'Último lance anulado.':'Ainda não há lances para anular.';$('validateStudyMove').disabled=true;};
  $('studyReset').onclick=()=>{loadStudy(current);};
  $('prepareExercise').onclick=prepare;
  document.querySelectorAll('.lba-level').forEach(btn=>btn.addEventListener('click',()=>{exerciseLevel=btn.dataset.level;document.querySelectorAll('.lba-level').forEach(x=>x.classList.toggle('active',x===btn));$('exercisePrompt').textContent=exerciseReady?prompts[exerciseLevel]:'Prepara o exercício para receber a posição e o desafio.';}));
  $('studyHint').onclick=()=>{$('exerciseFeedback').textContent=hints[exerciseLevel];};
- $('validateStudyMove').onclick=async()=>{if(!lastPlayed){$('exerciseFeedback').textContent='Joga primeiro um lance legal no tabuleiro.';return;}const fen=game.fen();$('exerciseFeedback').textContent='Lance legal registado: '+lastPlayed+'. Revê se o teu plano responde às características da estrutura.';await record('meio-jogo','estrategia','attempt',null,0,{study:current.name,level:exerciseLevel,san:lastPlayed,fen});};
+ $('validateStudyMove').onclick=async()=>{if(!lastPlayed||!exerciseStartFen){$('exerciseFeedback').textContent='Joga primeiro um lance legal no tabuleiro.';return;}const btn=$('validateStudyMove');btn.disabled=true;$('studyHint').disabled=true;$('exerciseFeedback').textContent='A comparar a tua decisão com Stockfish…';try{const lines=await analyseFen(exerciseStartFen,3,10);const best=lines[0]?.pv?.trim().split(/\\s+/)[0];if(!best)throw new Error('A engine não devolveu uma variante.');const bestGame=new Chess(exerciseStartFen);const bestMove=bestGame.move({from:best.slice(0,2),to:best.slice(2,4),promotion:best.length>4?best[4]:'q'});const correct=lastPlayedUci===best;const message=correct?'Excelente: escolheste o primeiro lance indicado pela análise Stockfish.':'Lance legal, mas a análise Stockfish prefere '+(bestMove?.san||best)+'. Compara os planos e tenta perceber a diferença.';$('exerciseFeedback').textContent=message;await record('meio-jogo','estrategia','attempt',correct?100:0,0,{study:current.name,level:exerciseLevel,san:lastPlayed,best:bestMove?.san||best,fen:exerciseStartFen});}catch(err){$('exerciseFeedback').textContent='O lance é legal, mas não foi possível concluir a avaliação automática: '+err.message+' Podes continuar a análise manualmente.';await record('meio-jogo','estrategia','attempt',null,0,{study:current.name,level:exerciseLevel,san:lastPlayed,fen:exerciseStartFen,engine_error:err.message});}finally{btn.disabled=false;}};
  renderGrid();loadStudy(current);
  trainingBoardCleanup=()=>{board.innerHTML='';};
 }
