@@ -112,60 +112,86 @@ function analyseFen(fen,multiPv=3,depth=12){
 }
 async function middlegame(){
  if(trainingBoardCleanup){trainingBoardCleanup();trainingBoardCleanup=null;}
- panel(`<div class="lba-module-intro"><span class="mini-label">MÓDULO 02 · CÁLCULO E ESTRATÉGIA</span><h3>Laboratório de Meio-Jogo</h3><p>Estuda a posição num tabuleiro interactivo, calcula variantes legais e consulta três candidatos do Stockfish.</p></div>
- <div class="lba-board-layout">
-  <article class="lba-suite-card lba-board-card">
-   <div class="lba-board-top"><div><span class="mini-label">TABULEIRO DE TREINO</span><h3>Posição de análise</h3></div><span class="lba-tag">1 : 1 · RESPONSIVO</span></div>
-   <div class="lba-board-frame"><div id="lbaTrainingBoard" class="cg-wrap brown cburnett" aria-label="Tabuleiro interactivo de xadrez"></div></div>
-   <div class="lba-board-tools"><label class="lba-promotion-choice">Promoção<select id="promotionChoice"><option value="q">Dama</option><option value="r">Torre</option><option value="b">Bispo</option><option value="n">Cavalo</option></select></label><button type="button" id="boardFlip" class="lba-secondary">Rodar tabuleiro</button><button type="button" id="boardUndo" class="lba-secondary">Anular lance</button><button type="button" id="boardReset" class="lba-secondary">Repor posição</button></div>
-   <div id="boardCoach" class="lba-board-coach" role="status" aria-live="polite">Tabuleiro pronto. Selecciona uma peça e escolhe uma casa legal.</div>
-  </article>
-  <div class="lba-board-side">
-   <article class="lba-suite-card"><h3>Posição e cálculo</h3><form id="calcForm" class="lba-form">
-    <label>FEN da posição<textarea id="calcFen" rows="3">r1bq1rk1/ppp2ppp/2n2n2/2bp4/2B5/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 8</textarea></label>
-    <div class="lba-board-tools"><button type="button" id="boardLoadFen" class="lba-primary">Carregar FEN</button><button type="button" id="boardCopyFen" class="lba-secondary">Copiar FEN</button></div>
-    <label>A tua linha (SAN separado por espaços)<input id="calcLine" placeholder="Nxd5 Nxd5 Nxd5"></label>
-    <label>Estrutura de peões<select id="pawnStructure"><option value="other">Geral</option><option value="carlsbad">Carlsbad</option><option value="isolated-queen-pawn">Peão isolado da dama</option><option value="hanging-pawns">Peões pendurados</option><option value="pawn-chain">Cadeia de peões</option><option value="minority-attack">Ataque de minoria</option><option value="open-center">Centro aberto</option></select></label>
-    <button class="lba-primary">Validar linha de cálculo</button>
-   </form><div id="calcFeedback" class="lba-feedback">A linha será reproduzida lance a lance e validada pelas regras.</div></article>
-   <article class="lba-suite-card"><span class="mini-label">ANÁLISE DE POSIÇÃO</span><h3>Stockfish · três candidatos</h3><p>Avaliação local no dispositivo. Em telemóveis, usa profundidade moderada para preservar bateria e fluidez.</p><button id="engineAnalyse" class="lba-primary">Analisar posição</button><div id="engineFeedback" class="lba-feedback">A engine ainda não foi carregada.</div></article>
-  </div>
- </div>
- <article class="lba-suite-card"><span class="mini-label">TEMAS E ESTRUTURAS</span><h3>Biblioteca de estudo</h3><p>Carlsbad · Peão isolado · Peões pendurados · Cadeias de peões · Ataque de minoria · Centro aberto. Os exercícios serão apresentados como biblioteca completa apenas quando o conteúdo estiver curado e validado.</p></article>`);
- const boardEl=$('lbaTrainingBoard'),fenEl=$('calcFen'),coach=$('boardCoach');
- let game=new Chess(),orientation='white',ground=null;
- const destinations=()=>{
-  const map=new Map();
-  game.moves({verbose:true}).forEach(m=>{if(!map.has(m.from))map.set(m.from,[]);map.get(m.from).push(m.to);});
-  return map;
- };
- const refresh=()=>{
-  const fen=game.fen(),turn=game.turn();
-  fenEl.value=fen;
-  ground.set({fen,turnColor:turn==='w'?'white':'black',check:game.isCheck()? (turn==='w'?'white':'black'):false,lastMove:game.history({verbose:true}).slice(-1).map(m=>[m.from,m.to])[0],movable:{free:false,color:'both',dests:destinations(),showDests:true}});
- };
- const sayMove=(orig,dest)=>{
-  try{
-   const move=game.move({from:orig,to:dest,promotion:$('promotionChoice')?.value||'q'});
-   if(!move){refresh();return;}
-   refresh();
-   const end=game.isCheckmate()?'Xeque-mate.':game.isDraw()?'A partida terminou empatada.':game.isCheck()?'Xeque.':'';
-   coach.textContent=move.color==='w'?'Brancas: ':'Pretas: ';coach.textContent+=move.san+'. '+(end||'Lance legal. Podes continuar a análise.');
-   record('meio-jogo','estrategia','attempt',null,0,{kind:'board-move',san:move.san,fen:game.fen()});
-  }catch(err){refresh();coach.textContent='Lance não aceite: '+err.message;}
- };
- ground=Chessground(boardEl,{fen:game.fen(),orientation,coordinates:true,autoCastle:true,movable:{free:false,color:'both',dests:destinations(),showDests:true},animation:{enabled:true,duration:180},events:{move:sayMove}});
- $('boardFlip').onclick=()=>{orientation=orientation==='white'?'black':'white';ground.set({orientation});};
- $('boardUndo').onclick=()=>{const m=game.undo();refresh();coach.textContent=m?'Último lance anulado.':'Ainda não há lances para anular.';};
- $('boardReset').onclick=()=>{game.reset();refresh();coach.textContent='Posição inicial reposta.';};
- $('boardLoadFen').onclick=()=>{try{const next=new Chess(fenEl.value.trim());game=next;refresh();coach.textContent='FEN carregada. Posição validada.';}catch(err){coach.textContent='FEN inválida: '+err.message;}};
- $('boardCopyFen').onclick=()=>{const fen=game.fen();if(navigator.clipboard?.writeText)navigator.clipboard.writeText(fen).then(()=>{coach.textContent='FEN copiada.';}).catch(()=>{coach.textContent=fen;});else coach.textContent=fen;};
- $('calcForm').onsubmit=e=>{e.preventDefault();try{const chess=new Chess(fenEl.value.trim());const moves=$('calcLine').value.trim().split(/\s+/).filter(Boolean);if(!moves.length)throw new Error('Introduz uma linha de cálculo.');moves.forEach(s=>{if(!chess.move(s))throw new Error('Lance ilegal: '+s);});$('calcFeedback').textContent='Linha legal até ao fim ('+moves.length+' meios-lances). Posição final: '+chess.fen()+'. Estrutura seleccionada: '+$('pawnStructure').selectedOptions[0].textContent+'.';record('meio-jogo','estrategia','attempt',null,0,{plies:moves.length,structure:$('pawnStructure').value});}catch(err){$('calcFeedback').textContent='Linha inválida: '+err.message;}};
- $('engineAnalyse').onclick=async()=>{const out=$('engineFeedback');out.textContent='A iniciar Stockfish…';$('engineAnalyse').disabled=true;try{const fen=game.fen();const lines=await analyseFen(fen,3,12);out.innerHTML=lines.map(l=>'<div class="lba-engine-line"><b>#'+l.multipv+' · '+(l.scoreType==='mate'?'Mate em '+l.score:(l.score/100).toFixed(2))+'</b><p>'+esc(l.pv)+'</p></div>').join('')||'A engine não devolveu variantes.';await record('meio-jogo','estrategia','analysis',null,0,{fen,lines});}catch(err){out.textContent='Não foi possível analisar: '+err.message;}finally{$('engineAnalyse').disabled=false;}};
- const resize=()=>{if(ground)ground.redrawAll();};
- window.addEventListener('resize',resize,{passive:true});
- let ro=null;if(window.ResizeObserver){ro=new ResizeObserver(resize);ro.observe(boardEl.parentElement);}
- trainingBoardCleanup=()=>{window.removeEventListener('resize',resize);if(ro)ro.disconnect();if(ground){ground.destroy();ground=null;}};
+ const studies=[
+  {id:'italiano',side:'BRANCAS',name:'Jogo Italiano',line:'Centro e4–e5 · desenvolvimento · ataque a f7',pgn:'1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 6. cxd4 Bb4+ 7. Nc3',concept:'As Brancas procuram construir o centro com d4 e activar rapidamente as peças. O ponto f7 é uma referência táctica, mas o desenvolvimento e a segurança do rei vêm primeiro.',plans:['Completar o desenvolvimento e ligar as torres','Preparar d4 ou recuperar o centro com peças','Avaliar a pressão sobre f7 sem sacrificar a coordenação']},
+  {id:'espan hola',side:'BRANCAS',name:'Abertura Espanhola (Ruy López)',line:'Centro e4/e5 · bispo activo · casas d4 e f5',pgn:'1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3',concept:'A estrutura espanhola combina pressão sobre e5, preparação de d4 e melhoria gradual das peças. O bispo em b3 mantém influência na diagonal a2–g8.',plans:['Preparar d4 em condições favoráveis','Manter a pressão sobre o centro preto','Melhorar o cavalo e evitar rupturas prematuras']},
+  {id:'gambito',side:'BRANCAS',name:'Gambito da Dama',line:'Estrutura Carlsbad · colunas c e b · ruptura e4',pgn:'1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 b6',concept:'A estrutura pode conduzir ao plano de minoria na ala da dama ou à preparação de e4. A escolha depende da colocação das peças e da tensão central.',plans:['Identificar se o ataque de minoria é viável','Preparar e4 sem perder o controlo de d4','Usar a coluna c e as casas c5 e e5']},
+  {id:'inglesa',side:'BRANCAS',name:'Abertura Inglesa',line:'Fianqueto · casa d5 · coluna c',pgn:'1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5 5. Bg2 Nb6 6. Nf3 Nc6',concept:'A Inglesa disputa o centro à distância. O fianqueto dá pressão sobre a diagonal longa, enquanto a coluna c e a casa d5 orientam a luta estratégica.',plans:['Controlar d5 com peças e peões','Explorar a coluna c semiaberta','Escolher o momento certo para d4 ou d3']},
+  {id:'londres',side:'BRANCAS',name:'Sistema Londres',line:'Peão d4 · cavalo e5 · ruptura e4',pgn:'1. d4 d5 2. Nf3 Nf6 3. Bf4 e6 4. e3 c5 5. c3 Nc6 6. Nbd2 Bd6 7. Bg3',concept:'O sistema procura uma estrutura sólida e desenvolvimento harmonioso. A casa e5 pode servir de posto avançado, mas a ruptura e4 exige preparação.',plans:['Conservar a coordenação das peças menores','Avaliar a troca em d6 e o controlo de e5','Preparar e4 ou responder à pressão em c4']},
+  {id:'siciliana',side:'PRETAS',name:'Defesa Siciliana',line:'Peões assimétricos · coluna c · ruptura ...d5',pgn:'1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 e5 7. Nb3 Be6',concept:'A assimetria oferece contrajogo às Pretas. A coluna c e a ruptura ...d5 são recursos centrais, mas dependem do desenvolvimento e do controlo das casas.',plans:['Criar contrajogo na coluna c','Preparar ...d5 quando o centro permitir','Evitar atrasos no desenvolvimento da ala da dama']},
+  {id:'francesa',side:'PRETAS',name:'Defesa Francesa',line:'Cadeia e5–d4 · rupturas ...c5 e ...f6',pgn:'1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 Ne7 7. Nf3',concept:'A cadeia central define os planos. As Pretas atacam a base com ...c5 e podem preparar ...f6 para desafiar o peão avançado e libertar as peças.',plans:['Atacar a base da cadeia branca com ...c5','Preparar ...f6 sem abrir linhas contra o próprio rei','Libertar o bispo de casas claras']},
+  {id:'carokann',side:'PRETAS',name:'Defesa Caro-Kann',line:'Centro compacto · ...c5 · casas e4/e5',pgn:'1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 h6 7. Nf3',concept:'A Caro-Kann procura uma estrutura resistente e desenvolvimento saudável. A ruptura ...c5 desafia o centro e a luta pelas casas e4 e e5 orienta a manobra.',plans:['Concluir o desenvolvimento antes de abrir o centro','Preparar ...c5 com apoio suficiente','Controlar e4 e e5 com peças menores']},
+  {id:'eslava',side:'PRETAS',name:'Defesa Eslava',line:'Peões d5/c6 · bispo c8 · rupturas ...c5 e ...e5',pgn:'1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 dxc4 5. a4 Bf5 6. e3 e6 7. Bxc4',concept:'A estrutura d5/c6 dá solidez, mas as Pretas precisam libertar o bispo de c8 e escolher entre ...c5 e ...e5 para desafiar o centro.',plans:['Completar o desenvolvimento do bispo c8','Preparar ...c5 ou ...e5 sem ceder casas importantes','Usar a coluna c quando a posição abrir']},
+  {id:'india-rei',side:'PRETAS',name:'Defesa Índia do Rei',line:'Centro fechado · ...f5 · expansão b4/c5',pgn:'1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6',concept:'A estrutura pode fechar o centro e permitir jogo de ataque na ala do rei. As Pretas devem coordenar ...f5 com a pressão central e vigiar a expansão branca na ala da dama.',plans:['Preparar ...f5 com apoio das peças','Manter pressão sobre d4 e o centro','Calcular a corrida de planos nas duas alas']}
+ ];
+ let current=studies[0],game=new Chess(),orientation='white',selected=null,lastMove=null,exerciseReady=false,exerciseLevel='plano',lastPlayed=null;
+ const glyph={w:{k:'♔',q:'♕',r:'♖',b:'♗',n:'♘',p:'♙'},b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}};
+ const safe=(v)=>esc(v);
+ panel([
+ '<div class="lba-module-intro"><span class="mini-label">MÓDULO 02 · TREINO POSICIONAL</span><h3>Meio-jogo: compreender, calcular e decidir</h3><p>Dez estudos ligados às cinco aberturas das Brancas e às cinco defesas das Pretas. Observa a estrutura, identifica o plano e encontra lances candidatos antes de jogar.</p></div>',
+ '<div class="lba-study-grid" id="lbaStudyGrid"></div>',
+ '<div class="lba-study-detail"><div class="lba-study-heading"><div><span class="mini-label" id="studySide">ESTUDO 01 · BRANCAS</span><h3 id="studyTitle">Jogo Italiano</h3><p id="studyLine"></p></div><span class="lba-tag">10 ESTUDOS</span></div>',
+ '<section class="lba-study-concept"><span class="mini-label">O QUE DEves COMPREENDER</span><p id="studyConcept"></p><h4>Planos possíveis nesta estrutura</h4><ul id="studyPlans"></ul></section>',
+ '<div class="lba-board-layout lba-study-layout"><article class="lba-suite-card lba-board-card"><div class="lba-board-top"><div><span class="mini-label">POSIÇÃO DE ESTUDO · TABULEIRO INTERACTIVO</span><h3>Posição inicial</h3></div><span class="lba-tag">JOGO LEGAL</span></div><div class="lba-native-board-wrap"><div id="lbaNativeBoard" class="lba-native-board" role="group" aria-label="Tabuleiro interactivo de xadrez"></div></div><div class="lba-board-tools"><button type="button" id="studyFlip" class="lba-secondary">Rodar</button><button type="button" id="studyUndo" class="lba-secondary">Anular</button><button type="button" id="studyReset" class="lba-secondary">Repor posição</button><button type="button" id="prepareExercise" class="lba-primary">Preparar exercício</button></div><div id="studyBoardFeedback" class="lba-board-coach" role="status" aria-live="polite">Escolhe uma aula e prepara o exercício antes de jogar.</div><p class="lba-footnote">A posição corresponde à linha-modelo da abertura ou defesa seleccionada. Só são aceites lances legais.</p></article>',
+ '<aside class="lba-board-side"><article class="lba-suite-card lba-exercise-card"><span class="mini-label">EXERCÍCIOS DE CÁLCULO · TRÊS NÍVEIS</span><h3>Encontra o melhor lance</h3><div class="lba-level-row"><button type="button" class="lba-level active" data-level="plano">Nível 1 · Plano</button><button type="button" class="lba-level" data-level="calculo">Nível 2 · Cálculo</button><button type="button" class="lba-level" data-level="precisao">Nível 3 · Precisão</button></div><p id="exercisePrompt">Prepara o exercício para receber a posição e o desafio.</p><div class="lba-board-tools"><button type="button" id="validateStudyMove" class="lba-primary" disabled>Validar o meu lance</button><button type="button" id="studyHint" class="lba-secondary" disabled>Mostrar pista</button></div><div id="exerciseFeedback" class="lba-feedback">O teu resultado será registado no progresso de Estratégia.</div></article><article class="lba-suite-card"><span class="mini-label">MÉTODO LBA</span><h3>Antes de jogar</h3><ol class="lba-study-method"><li>Identifica os desequilíbrios da posição.</li><li>Compara os planos das duas cores.</li><li>Calcula a resposta mais forte do adversário.</li><li>Escolhe um lance e justifica a decisão.</li></ol></article></aside></div></div>'
+ ].join(''));
+ const grid=$('lbaStudyGrid'),board=$('lbaNativeBoard'),boardFeedback=$('studyBoardFeedback');
+ const prompts={plano:'Que plano estratégico corresponde melhor à estrutura actual?',calculo:'Calcula uma sequência concreta e identifica a melhor resposta do adversário.',precisao:'Compara os lances candidatos e escolhe a continuação mais precisa.'};
+ const hints={plano:'Observa a estrutura de peões, as colunas abertas e a peça menos activa.',calculo:'Enumera pelo menos dois lances candidatos e calcula a resposta forçada do adversário.',precisao:'Verifica primeiro os lances forçados: xeques, capturas e ameaças directas.'};
+ function renderGrid(){
+  grid.innerHTML='<div class="lba-study-group"><span class="mini-label">BRANCAS · ABERTURAS</span><div class="lba-study-buttons">'+studies.filter(s=>s.side==='BRANCAS').map(s=>'<button type="button" class="lba-study-button '+(s.id===current.id?'active':'')+'" data-study="'+safe(s.id)+'"><b>Brancas</b><strong>'+safe(s.name)+'</strong><small>'+safe(s.line)+'</small></button>').join('')+'</div></div><div class="lba-study-group"><span class="mini-label">PRETAS · DEFESAS</span><div class="lba-study-buttons">'+studies.filter(s=>s.side==='PRETAS').map(s=>'<button type="button" class="lba-study-button '+(s.id===current.id?'active':'')+'" data-study="'+safe(s.id)+'"><b>Pretas</b><strong>'+safe(s.name)+'</strong><small>'+safe(s.line)+'</small></button>').join('')+'</div></div>';
+  grid.querySelectorAll('[data-study]').forEach(btn=>btn.addEventListener('click',()=>loadStudy(studies.find(s=>s.id===btn.dataset.study))));
+ }
+ function renderBoard(){
+  board.innerHTML='';
+  const rows=game.board();
+  for(let r=0;r<8;r++)for(let f=0;f<8;f++){
+   const rr=orientation==='white'?r:7-r,ff=orientation==='white'?f:7-f,p=rows[rr][ff],square='abcdefgh'[ff]+(8-rr);
+   const cell=document.createElement('button');cell.type='button';cell.className='lba-native-square '+((rr+ff)%2?'dark':'light')+(selected===square?' selected':'')+(lastMove&&(lastMove[0]===square||lastMove[1]===square)?' last-move':'');
+   cell.setAttribute('aria-label',square+(p?' '+(p.color==='w'?'Brancas ':'Pretas ')+p.type:''));
+   if(p){const piece=document.createElement('span');piece.className='lba-chess-piece '+(p.color==='w'?'white-piece':'black-piece');piece.textContent=glyph[p.color][p.type];cell.appendChild(piece);}
+   cell.addEventListener('click',()=>onSquare(square));board.appendChild(cell);
+  }
+ }
+ function updateStudyText(){
+  $('studySide').textContent='ESTUDO '+String(studies.indexOf(current)+1).padStart(2,'0')+' · '+current.side;
+  $('studyTitle').textContent=current.name;$('studyLine').textContent=current.line;$('studyConcept').textContent=current.concept;
+  $('studyPlans').innerHTML=current.plans.map(p=>'<li>'+safe(p)+'</li>').join('');
+ }
+ function loadStudy(study){
+  if(!study)return;current=study;game=new Chess();
+  try{game.loadPgn(study.pgn);}catch(err){boardFeedback.textContent='Não foi possível carregar a linha-modelo: '+err.message;return;}
+  selected=null;lastMove=null;lastPlayed=null;exerciseReady=false;
+  $('validateStudyMove').disabled=true;$('studyHint').disabled=true;$('exercisePrompt').textContent='Prepara o exercício para receber a posição e o desafio.';
+  $('exerciseFeedback').textContent='O teu resultado será registado no progresso de Estratégia.';
+  updateStudyText();renderGrid();renderBoard();boardFeedback.textContent='Posição-modelo carregada. Prepara o exercício para começar.';
+ }
+ function onSquare(square){
+  if(!exerciseReady){boardFeedback.textContent='Primeiro selecciona “Preparar exercício”.';return;}
+  if(selected){
+   try{
+    const move=game.move({from:selected,to:square,promotion:'q'});
+    if(move){lastMove=[move.from,move.to];lastPlayed=move.san;selected=null;renderBoard();boardFeedback.textContent='Lance legal: '+move.san+'. Agora explica o plano e calcula a resposta adversária.';$('validateStudyMove').disabled=false;return;}
+   }catch(e){}
+  }
+  const piece=game.get(square);selected=piece&&piece.color===game.turn()?square:null;renderBoard();
+ }
+ function prepare(){
+  try{game=new Chess();game.loadPgn(current.pgn);}catch(e){boardFeedback.textContent='Erro ao preparar a posição.';return;}
+  selected=null;lastMove=null;lastPlayed=null;exerciseReady=true;renderBoard();
+  $('exercisePrompt').textContent=prompts[exerciseLevel];$('validateStudyMove').disabled=true;$('studyHint').disabled=false;
+  $('exerciseFeedback').textContent='Exercício preparado. Joga um lance legal no tabuleiro e valida a tua decisão.';
+  boardFeedback.textContent='Exercício pronto. A posição foi reposta à linha-modelo.';
+ }
+ $('studyFlip').onclick=()=>{orientation=orientation==='white'?'black':'white';renderBoard();};
+ $('studyUndo').onclick=()=>{const m=game.undo();selected=null;lastMove=game.history({verbose:true}).slice(-1).map(x=>[x.from,x.to])[0]||null;lastPlayed=null;renderBoard();boardFeedback.textContent=m?'Último lance anulado.':'Ainda não há lances para anular.';$('validateStudyMove').disabled=true;};
+ $('studyReset').onclick=()=>{loadStudy(current);};
+ $('prepareExercise').onclick=prepare;
+ document.querySelectorAll('.lba-level').forEach(btn=>btn.addEventListener('click',()=>{exerciseLevel=btn.dataset.level;document.querySelectorAll('.lba-level').forEach(x=>x.classList.toggle('active',x===btn));$('exercisePrompt').textContent=exerciseReady?prompts[exerciseLevel]:'Prepara o exercício para receber a posição e o desafio.';}));
+ $('studyHint').onclick=()=>{$('exerciseFeedback').textContent=hints[exerciseLevel];};
+ $('validateStudyMove').onclick=async()=>{if(!lastPlayed){$('exerciseFeedback').textContent='Joga primeiro um lance legal no tabuleiro.';return;}const fen=game.fen();$('exerciseFeedback').textContent='Lance legal registado: '+lastPlayed+'. Revê se o teu plano responde às características da estrutura.';await record('meio-jogo','estrategia','attempt',null,0,{study:current.name,level:exerciseLevel,san:lastPlayed,fen});};
+ renderGrid();loadStudy(current);
+ trainingBoardCleanup=()=>{board.innerHTML='';};
 }
 async function endgames(){
  if(endgameBoardCleanup){endgameBoardCleanup();endgameBoardCleanup=null;}
