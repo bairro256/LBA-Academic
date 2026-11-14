@@ -161,3 +161,44 @@
 .classroom-lesson .lesson-drill .quiz-option.correct-answer{border-color:#4eaa79;background:rgba(55,155,103,.12);color:#a9e5c2}
 .classroom-lesson .lesson-drill .board-feedback{margin-top:.7rem;line-height:1.65}
 @media(max-width:640px){.classroom-lesson .lesson-lead,.classroom-lesson .lesson-chapter p{font-size:.93rem;line-height:1.8}.classroom-lesson .lesson-chapter{padding:1rem 0}.classroom-lesson .lesson-drills,.classroom-lesson .lesson-concept,.classroom-lesson .lesson-mistakes,.classroom-lesson .lesson-recipe{padding:.9rem}}
+
+
+/* LBA Premium · tabuleiro nativo do módulo de Meio-Jogo */
+.lba-study-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.lba-study-group{padding:14px;border:1px solid var(--line);border-radius:13px;background:var(--panel2)}
+.lba-study-buttons{display:grid;gap:8px;margin-top:10px}
+.lba-study-button{display:grid;gap:4px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);cursor:pointer;min-width:0}
+.lba-study-button b{font:800 8px Manrope;letter-spacing:.8px;color:var(--gold)}
+.lba-study-button strong{font:800 12px Manrope}
+.lba-study-button small{font-size:10px;line-height:1.5;color:var(--muted)}
+.lba-study-button.active{border-color:var(--gold);box-shadow:inset 3px 0 var(--gold);background:color-mix(in srgb,var(--gold) 8%,var(--panel))}
+.lba-study-detail{margin:22px 0;padding:clamp(14px,3vw,24px);border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.lba-study-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.lba-study-heading h3{font:900 clamp(20px,3vw,28px) Manrope;margin:6px 0}
+.lba-study-heading p{font-size:11px;color:var(--muted);line-height:1.6;margin:0}
+.lba-study-concept{padding:16px 0 8px}
+.lba-study-concept>p{font-size:12px;line-height:1.8;color:var(--text);max-width:82ch}
+.lba-study-concept h4{font:800 13px Manrope;margin:14px 0 8px}
+.lba-study-concept ul,.lba-study-method{padding-left:20px}
+.lba-study-concept li,.lba-study-method li{font-size:11px;line-height:1.8;color:var(--muted);margin:4px 0}
+.lba-study-layout{grid-template-columns:minmax(0,1.08fr) minmax(250px,.82fr);margin-top:12px}
+.lba-native-board-wrap{width:min(100%,560px);aspect-ratio:1;margin:0 auto;padding:5px;border:1px solid #927b5b;border-radius:8px;background:#5a4636;box-shadow:0 12px 28px #0005}
+.lba-native-board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));width:100%;height:100%;overflow:hidden;border-radius:3px;touch-action:manipulation}
+.lba-native-square{position:relative;display:grid;place-items:center;min-width:0;min-height:0;padding:0;border:0;border-radius:0;cursor:pointer;line-height:1}
+.lba-native-square.light{background:#f0d9b5}
+.lba-native-square.dark{background:#b58863}
+.lba-native-square.selected{box-shadow:inset 0 0 0 4px #f4d35e}
+.lba-native-square.last-move{background-image:linear-gradient(#f5df6370,#f5df6370)}
+.lba-chess-piece{display:block;font-family:"Arial Unicode MS","Segoe UI Symbol",serif;font-size:clamp(22px,5.7vw,48px);line-height:1;user-select:none;pointer-events:none}
+.lba-chess-piece.white-piece{color:#fff;text-shadow:1px 1px 1px #222,-1px -1px 1px #222,1px -1px 1px #222,-1px 1px 1px #222,0 2px 3px #222}
+.lba-chess-piece.black-piece{color:#171717;text-shadow:0 1px 1px #fff8}
+.lba-level-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:14px 0}
+.lba-level{min-width:0;padding:9px 5px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font:700 10px Manrope;cursor:pointer}
+.lba-level.active{border-color:var(--gold);color:var(--gold);background:color-mix(in srgb,var(--gold) 9%,var(--panel))}
+.lba-exercise-card>p{font-size:11px;line-height:1.7;color:var(--muted);min-height:48px}
+.lba-study-method{margin:10px 0}
+.lba-study-detail .lba-board-frame{display:none}
+@media(max-width:760px){.lba-study-grid{grid-template-columns:1fr}.lba-study-layout{grid-template-columns:minmax(0,1fr)}.lba-study-heading{display:block}.lba-study-heading .lba-tag{display:inline-block;margin-top:10px}.lba-native-board-wrap{width:min(100%,440px)}}
+@media(max-width:390px){.lba-level{font-size:9px;padding:8px 3px}.lba-chess-piece{font-size:clamp(20px,7vw,34px)}}
+:root[data-theme="light"] .lba-study-group,:root[data-theme="light"] .lba-study-detail{background:#fff}
+:root[data-theme="light"] .lba-study-button{background:#f8f8f6;color:#20232a}
