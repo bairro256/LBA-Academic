@@ -3,7 +3,7 @@ let pendingFullCurriculumAccess = false;
 let curriculumModuleReady = false;
 let setFullCurriculumAccess = value => { pendingFullCurriculumAccess = !!value; };
 let initPremiumExperience = () => {};
-import('./premium-experience.js?v=20261113-8').then(module => { initPremiumExperience = module.initPremiumExperience; if (!$('premiumContent')?.hidden) initPremiumExperience(); }).catch(error => console.error('Falha ao carregar o sistema avançado LBA:', error));
+import('./premium-experience.js?v=20261114-1').then(module => { initPremiumExperience = module.initPremiumExperience; if (!$('premiumContent')?.hidden) initPremiumExperience(); }).catch(error => console.error('Falha ao carregar o sistema avançado LBA:', error));
 // O estado de acesso é guardado até o currículo terminar de carregar, evitando a corrida entre autenticação e importação.
 import('./curriculum.js?v=20261113-11').then(module => {
   const applyFullAccess = module.setFullCurriculumAccess;
