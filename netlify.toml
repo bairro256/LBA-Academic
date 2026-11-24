@@ -1,5 +1,6 @@
 [build]
   publish = "site-institucional"
+  functions = "netlify/functions"
 
 [build.processing]
   skip_processing = false
