@@ -1,38 +1,7 @@
-const WHATSAPP_NUMBER = "244941082712";
-const menuToggle = document.querySelector(".menu-toggle");
-const nav = document.querySelector(".nav");
-if (menuToggle && nav) {
-  menuToggle.addEventListener("click", () => {
-    const open = nav.classList.toggle("open");
-    menuToggle.setAttribute("aria-expanded", String(open));
-    menuToggle.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
-    menuToggle.textContent = open ? "×" : "☰";
-  });
-  nav.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-    nav.classList.remove("open");
-    menuToggle.setAttribute("aria-expanded", "false");
-    menuToggle.textContent = "☰";
-  }));
-}
-const form = document.getElementById("enrolForm");
-if (form) {
-  form.addEventListener("submit", event => {
-    event.preventDefault();
-    if (!form.reportValidity()) return;
-    const data = new FormData(form);
-    const message = [
-      "Olá, LBA Academia de Xadrez! Gostaria de solicitar informações sobre a formação.",
-      "",
-      "Nome: " + data.get("studentName"),
-      "Idade do aluno: " + data.get("studentAge"),
-      "Tipo de formação: " + data.get("program"),
-      "Modalidade: " + data.get("modality"),
-      "Informação adicional: " + (data.get("message") || "Não indicada"),
-      "",
-      "Aguardo o vosso contacto. Obrigado(a)."
-    ].join("\n");
-    const url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
-    window.open(url, "_blank", "noopener,noreferrer");
-  });
-}
-document.getElementById("year").textContent = new Date().getFullYear();
+const WHATSAPP_NUMBER="244941082712";
+const menuToggle=document.querySelector(".menu-toggle");
+const nav=document.querySelector(".nav");
+if(menuToggle&&nav){menuToggle.addEventListener("click",()=>{const open=nav.classList.toggle("open");menuToggle.setAttribute("aria-expanded",String(open));menuToggle.setAttribute("aria-label",open?"Fechar menu":"Abrir menu");menuToggle.textContent=open?"×":"☰";});nav.querySelectorAll("a").forEach(link=>link.addEventListener("click",()=>{nav.classList.remove("open");menuToggle.setAttribute("aria-expanded","false");menuToggle.textContent="☰";}));}
+const form=document.getElementById("enrolForm");
+if(form){form.addEventListener("submit",event=>{event.preventDefault();if(!form.reportValidity())return;const d=new FormData(form);const message=["Olá, LBA Academia de Xadrez! Preenchi o formulário no site e gostaria de conversar sobre a inscrição.","","Nome do encarregado: "+d.get("guardianName"),"Contacto: "+d.get("guardianPhone"),"Nome do aluno: "+d.get("studentName"),"Idade: "+d.get("studentAge"),"Experiência: "+d.get("experience"),"Objectivo: "+d.get("goal"),"Zona de Luanda: "+d.get("area"),"Modalidade pretendida: "+d.get("modality"),"Disponibilidade: "+(d.get("availability")||"A combinar"),"Observações: "+(d.get("message")||"Nenhuma"),"","Aguardo o vosso contacto. Obrigado(a)."].join("\n");window.location.href="https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(message);});}
+const year=document.getElementById("year");if(year)year.textContent=new Date().getFullYear();
